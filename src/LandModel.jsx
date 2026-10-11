@@ -44,9 +44,12 @@ function height(x, z) {
   return Math.max(0, (hills + rock - 0.02) * edge * soften);
 }
 
-export default function LandModel({ places, active, onSelect }) {
-  const canvas = useRef(null), st = useRef({ active, mx: 0, my: 0 });
+export const inModel = (lat, lng) => lat > B.latMin && lat < B.latMax && lng > B.lngMin && lng < B.lngMax;
+
+export default function LandModel({ places, active, onSelect, target }) {
+  const canvas = useRef(null), st = useRef({ active, mx: 0, my: 0, target: null, tAt: 0 });
   st.current.active = active;
+  if ((target || null) !== st.current.target) { st.current.target = target || null; st.current.tAt = performance.now(); }
 
   useEffect(() => {
     const cv = canvas.current; if (!cv) return;
@@ -71,9 +74,9 @@ export default function LandModel({ places, active, onSelect }) {
     const lakes = LAKES.map(p => ({ ...p, x: toX(p.lng), z: toZ(p.lat) }));
 
     let W = 0, H = 0, dpr = 1;
-    const resize = () => { dpr = Math.min(2, window.devicePixelRatio || 1); W = cv.clientWidth; H = cv.clientHeight; cv.width = W * dpr; cv.height = H * dpr; };
+    const resize = () => { dpr = Math.min(1.5, window.devicePixelRatio || 1); W = cv.clientWidth; H = cv.clientHeight; cv.width = W * dpr; cv.height = H * dpr; };
     resize();
-    const cam = { tx: -0.05, tz: 0.02, d: 2.7, yaw: 0, pitch: 0.62, hit: [] };
+    const cam = { tx: -0.05, tz: 0.02, d: 2.7, yaw: 0, pitch: 0.62, cy: 0.58, hit: [] };
     const mobile = () => W < 700;
 
     const proj = (x, y, z) => {
@@ -82,18 +85,25 @@ export default function LandModel({ places, active, onSelect }) {
       const cp = Math.cos(cam.pitch), sp = Math.sin(cam.pitch);
       const up = y * cp - Z1 * sp, depth = cam.d - Z1 * cp - y * sp;
       const f = (mobile() ? 1.25 : 1.05) * Math.min(W, H * 1.8) / depth;
-      return [W / 2 + X1 * f, H * 0.58 - up * f * 1.6, depth];
+      return [W / 2 + X1 * f, H * cam.cy - up * f * 1.6, depth];
     };
 
     let t0 = performance.now(), raf = 0, visible = true;
+    let lastDraw = 0;
     const frame = now => {
+      if (!still && now - lastDraw < 30) { if (visible) raf = requestAnimationFrame(frame); return; }
+      lastDraw = now;
       const t = (now - t0) / 1000, a = st.current.active;
-      const focus = a != null ? pins[a] : null;
-      const goal = focus ? { tx: focus.x, tz: focus.z, d: 1.55 } : { tx: -0.05, tz: 0.02, d: mobile() ? 2.4 : 2.7 };
+      const T = st.current.target && inModel(st.current.target.lat, st.current.target.lng) ? st.current.target : null;
+      const tg = T ? { x: toX(T.lng), z: toZ(T.lat) } : null;
+      if (tg) tg.y = height(tg.x, tg.z);
+      const focus = tg ? tg : a != null ? pins[a] : null;
+      const goal = tg ? { tx: tg.x, tz: tg.z, d: 1.2 } : focus ? { tx: focus.x, tz: focus.z, d: 1.55 } : { tx: -0.05, tz: 0.02, d: mobile() ? 2.4 : 2.7 };
       const k = still ? 1 : 0.045;
-      cam.tx += (goal.tx - cam.tx) * k; cam.tz += (goal.tz - cam.tz) * k; cam.d += (goal.d - cam.d) * k;
-      const yawGoal = (still ? 0 : Math.sin(t * 0.06) * 0.16) + st.current.mx * 0.32;
-      const pitchGoal = 0.62 - st.current.my * 0.12;
+      cam.cy += ((tg ? 0.68 : 0.58) - cam.cy) * k; cam.tx += (goal.tx - cam.tx) * k; cam.tz += (goal.tz - cam.tz) * k; cam.d += (goal.d - cam.d) * k;
+      const orbit = tg && !still ? Math.min(1, (now - st.current.tAt) / 2500) * Math.sin((now - st.current.tAt) / 9000) * 0.5 : 0;
+      const yawGoal = (still ? 0 : Math.sin(t * 0.06) * 0.16) + st.current.mx * 0.32 + orbit;
+      const pitchGoal = (tg ? 0.78 : 0.62) - st.current.my * 0.12;
       cam.yaw += (yawGoal - cam.yaw) * (still ? 1 : 0.05); cam.pitch += (pitchGoal - cam.pitch) * (still ? 1 : 0.05);
 
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -147,6 +157,24 @@ export default function LandModel({ places, active, onSelect }) {
           cam.hit.push([i, g[0], g[1], top[0], top[1]]);
         });
       }
+      /* the searched address: a tall beacon with rings spreading over the ground */
+      if (tg) {
+        const age = (now - st.current.tAt) / 1000, rise = still ? 1 : Math.min(1, age / 1.4), e = 1 - Math.pow(1 - rise, 3);
+        const g = proj(tg.x, tg.y, tg.z), top = proj(tg.x, tg.y + 0.11 * e, tg.z);
+        for (let k = 0; k < 3; k++) {
+          const ph = still ? k / 3 : ((age * 0.5 + k / 3) % 1), rr = 6 + ph * 70;
+          ctx.beginPath(); ctx.ellipse(g[0], g[1], rr, rr * 0.36, 0, 0, Math.PI * 2);
+          ctx.strokeStyle = `rgba(244,217,168,${(0.7 * (1 - ph)).toFixed(3)})`; ctx.lineWidth = 1.2; ctx.stroke();
+        }
+        const grad = ctx.createLinearGradient(0, g[1], 0, top[1]);
+        grad.addColorStop(0, 'rgba(255,236,200,1)'); grad.addColorStop(1, 'rgba(244,217,168,0)');
+        ctx.strokeStyle = grad; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(g[0], g[1]); ctx.lineTo(top[0], top[1]); ctx.stroke(); ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.arc(g[0], g[1], 4.5, 0, Math.PI * 2); ctx.fillStyle = '#FFF1D6'; ctx.fill();
+        ctx.textAlign = 'center'; ctx.globalAlpha = e;
+        ctx.font = '500 12px "DM Sans", system-ui, sans-serif'; ctx.fillStyle = '#C4A878'; ctx.fillText(spaced('YOUR LAND'), top[0], top[1] - 12);
+        ctx.font = 'italic 500 18px "Cormorant Garamond", Georgia, serif'; ctx.fillStyle = 'rgba(239,235,226,0.95)'; ctx.fillText(st.current.target.short || '', top[0], top[1] - 32);
+        ctx.globalAlpha = 1;
+      }
       /* labels on top */
       ctx.textBaseline = 'alphabetic';
       lakes.forEach(L => { const p = proj(L.x, 0, L.z); ctx.font = 'italic 500 15px "Cormorant Garamond", Georgia, serif'; ctx.fillStyle = 'rgba(167,170,158,0.75)'; ctx.textAlign = 'center'; ctx.fillText(L.name, p[0], p[1] + 4); });
@@ -159,7 +187,7 @@ export default function LandModel({ places, active, onSelect }) {
         ctx.fillText(spaced(p.name.toUpperCase()), top[0], top[1] - 10);
         if (on) { ctx.font = 'italic 500 17px "Cormorant Garamond", Georgia, serif'; ctx.fillStyle = 'rgba(239,235,226,0.9)'; ctx.fillText(p.note, top[0], top[1] - 30); }
       });
-      if (visible && !still) raf = requestAnimationFrame(frame);
+      if (visible && (!still || (tg && (now - st.current.tAt) < 50))) raf = requestAnimationFrame(frame);
     };
     const spaced = s => s.split('').join(' ');
 
@@ -181,7 +209,7 @@ export default function LandModel({ places, active, onSelect }) {
     return () => { cancelAnimationFrame(raf); io.disconnect(); ro.disconnect(); cv.removeEventListener('mousemove', onMove); cv.removeEventListener('mouseleave', onLeave); cv.removeEventListener('click', onClick); };
   }, [places]);
 
-  useEffect(() => { /* redraw for reduced-motion when the selection changes */ }, [active]);
+  
 
   return <canvas ref={canvas} className="land-model" role="img" aria-label="A contour model of western Hyderabad showing the places where Project 49 builds" data-cursor="Explore" />;
 }

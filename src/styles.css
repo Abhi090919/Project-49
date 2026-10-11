@@ -15,6 +15,7 @@
 }
 * { box-sizing: border-box }
 html { scroll-behavior: smooth; scroll-padding-top: 90px }
+html.no-smooth { scroll-behavior: auto }
 body { margin: 0; overflow-x: hidden }
 img, video { display: block; max-width: 100% }
 button, a, input, select, textarea { -webkit-tap-highlight-color: transparent; font: inherit; color: inherit }
@@ -730,3 +731,126 @@ p, li { font-size: inherit }
 .footer-rule { width: 44px !important; margin: 26px 0 22px }
 .footer-brand span { font: 500 21px/1 var(--serif); letter-spacing: .34em; margin-right: -.34em; font-variant-numeric: lining-nums; font-feature-settings: "lnum" 1; white-space: nowrap }
 @media (max-width: 700px) { .footer-brand img { width: 140px !important } }
+
+/* Cursor v2: portalled to <body>, above every layer incl. the intro film; dot is exact */
+.cursor-layer { position: fixed; inset: 0; pointer-events: none; z-index: 2147483000 !important }
+.has-cursor .cursor-dot { width: 7px; height: 7px; margin: -3.5px 0 0 -3.5px; background: var(--brass); box-shadow: 0 0 0 1px #0e171299; will-change: transform; transition: opacity .2s, width .2s, height .2s, margin .2s }
+.has-cursor .cursor-ring { will-change: transform; transition: width .3s var(--ease), height .3s var(--ease), margin .3s var(--ease), background .3s, border-color .3s, opacity .25s }
+.cursor-down .cursor-ring { width: 26px; height: 26px; margin: -13px 0 0 -13px }
+.cursor-text .cursor-ring { opacity: 0 !important }
+.cursor-text .cursor-dot { width: 2px; height: 22px; margin: -11px 0 0 -1px; border-radius: 1px }
+.cursor-ring.labelled + .cursor-dot { opacity: 0 !important }
+
+/* Chapters: each one holds on screen for a while before the next slides over it */
+.chapter-hold { position: relative; height: 280svh }
+.chapter-hold + .chapter-hold { margin-top: -100svh }
+.chapter-hold:last-child { height: 200svh }
+.chapter-hold > .chapter { position: sticky; top: 0 }
+.chapter-hold + .chapter-hold > .chapter { box-shadow: 0 -40px 80px #000c }
+@media (prefers-reduced-motion: reduce) { .chapter-hold, .chapter-hold:last-child { height: auto } }
+
+/* Delivery icons: drawn in brass as each step lights up; they lift and glow on hover */
+.path li { position: relative }
+.path-icon { display: block; width: 56px; height: 56px; margin: 30px 0 18px -4px; fill: none; stroke: var(--brass); stroke-width: 1.3; stroke-linecap: round; stroke-linejoin: round; overflow: visible; transition: transform .6s var(--ease), filter .6s }
+.path-icon * { stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 1.4s var(--ease) }
+.path-icon .ic-fill { fill: var(--brass); fill-opacity: 0; transition: fill-opacity .8s .9s, stroke-dashoffset 1.4s var(--ease) }
+.path li.on .path-icon * { stroke-dashoffset: 0 }
+.path li.on .path-icon .ic-fill { fill-opacity: 1 }
+.path li:hover .path-icon { transform: translateY(-6px) scale(1.06); filter: drop-shadow(0 6px 18px #c4a87855) }
+.path li:hover .path-icon * { animation: ic-redraw 1.6s var(--ease) }
+@keyframes ic-redraw { 0% { stroke-dashoffset: 1 } 100% { stroke-dashoffset: 0 } }
+.path li:nth-child(3) .path-icon { transform-origin: center }
+.path li:hover h3 { color: var(--brass); transition: color .4s }
+@media (max-width: 900px) { .path-icon { width: 46px; height: 46px; margin: 0 0 12px } }
+@media (prefers-reduced-motion: reduce) { .path-icon * { stroke-dashoffset: 0 !important; transition: none !important; animation: none !important } .path-icon .ic-fill { fill-opacity: 1 } }
+
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap }
+
+/* ---------- Where we build: address search over the model ---------- */
+.land-wrap { position: relative; overflow: hidden; border-radius: 2px; box-shadow: 0 40px 120px #0008 }
+.address { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); width: min(620px, calc(100% - 32px)); z-index: 4; display: grid; gap: 12px }
+.address-form { display: flex; align-items: center; gap: 10px; padding: 6px 6px 6px 18px; background: #0e1712cc; backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid #c4a87855; border-radius: 999px; transition: border-color .3s, box-shadow .3s }
+.address-form:focus-within { border-color: var(--brass); box-shadow: 0 0 0 6px #c4a8781a }
+.address-form svg { width: 18px; height: 18px; flex: none; fill: none; stroke: var(--brass); stroke-width: 1.5; stroke-linecap: round }
+.address-form input { flex: 1; min-width: 0; background: transparent; border: 0; color: var(--ivory); font: 400 15px/1.2 var(--sans); padding: 12px 4px }
+.address-form input::placeholder { color: #a7aa9ebf }
+.address-form input:focus { outline: none }
+.address-form button { flex: none; min-height: 44px; padding: 0 20px; border-radius: 999px; background: var(--brass); color: var(--moss); font: 500 11px/1 var(--sans); letter-spacing: .14em; text-transform: uppercase; transition: background .3s, transform .3s }
+.address-form button:hover { background: var(--ivory) }
+.address-err { margin: 0; justify-self: center; padding: 8px 14px; background: #0e1712d9; border-radius: 999px; font-size: 13px; color: var(--stone) }
+.address-card { justify-self: start; width: min(360px, 100%); padding: 18px 20px 16px; background: #0e1712e0; backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid var(--line); border-top: 1px solid var(--brass); animation: card-in .7s var(--ease) both }
+@keyframes card-in { from { opacity: 0; transform: translateY(-8px) } }
+.address-card h3 { margin: 8px 0 4px; font: 500 26px/1.1 var(--serif) }
+.address-full { margin: 0; font-size: 12px; line-height: 1.5; color: var(--stone) }
+.address-note { margin: 10px 0 0; font: italic 500 15px/1.35 var(--serif); color: var(--brass) }
+.address-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; margin-top: 14px }
+.address-actions a, .address-tell { font: 500 11px/1 var(--sans); letter-spacing: .12em; text-transform: uppercase; color: var(--ivory); border-bottom: 1px solid #c4a87888; padding: 8px 0 6px; min-height: 0 }
+.address-actions a:hover, .address-tell:hover { color: var(--brass) }
+.address-clear { margin-left: auto; min-height: 0; width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--line); color: var(--stone); font-size: 16px; line-height: 1 }
+@media (max-width: 700px) { .address { top: 12px } .address-form { padding-left: 14px } .address-form button { padding: 0 14px } .address-card { width: 100% } }
+
+/* places list: numbered, roomier, brass underline grows on the active place */
+.places-list { gap: 0 20px; margin-top: 34px }
+.places-list button { position: relative; padding: 18px 0 14px; border-top: 1px solid var(--line) }
+.places-list button::before { content: ''; position: absolute; left: 0; top: -1px; height: 1px; width: 100%; background: var(--brass); transform: scaleX(0); transform-origin: left; transition: transform .7s var(--ease) }
+.places-list button.on::before, .places-list button:hover::before { transform: scaleX(1) }
+.places-list button.on { border-color: var(--line) }
+.places-n { display: block; margin-bottom: 10px; font: 500 11px/1 var(--sans); font-style: normal; letter-spacing: .14em; color: var(--brass) }
+.places-list strong { transition: color .3s, transform .5s var(--ease) }
+.places-list button:hover strong { transform: translateX(4px) }
+.places-list span { line-height: 1.45; white-space: normal }
+
+/* ---------- Talk to us ---------- */
+.conversation.cine { align-items: center }
+.conversation h2 { font-size: clamp(40px, 4.6vw, 72px); line-height: 1.02 }
+.promise { list-style: none; padding: 0; margin: 34px 0 0; display: grid; gap: 0; max-width: 460px; border-top: 1px solid #efebe222 }
+.promise li { display: flex; gap: 18px; align-items: baseline; padding: 14px 0; border-bottom: 1px solid #efebe222; font: 500 clamp(19px, 1.6vw, 23px)/1.3 var(--serif); color: var(--ivory) }
+.promise span { font: 500 11px/1 var(--sans); letter-spacing: .14em; color: var(--brass) }
+.conversation-form { position: relative; padding: clamp(28px, 3.4vw, 48px); background: #0e1712b8; backdrop-filter: blur(18px) saturate(1.1); -webkit-backdrop-filter: blur(18px) saturate(1.1); border: 1px solid #efebe21f; border-top: 1px solid var(--brass); box-shadow: 0 50px 120px #000a }
+.conversation-form::before { content: 'A private conversation'; display: block; margin-bottom: 26px; font: italic 500 22px/1.2 var(--serif); color: var(--brass) }
+@media (max-width: 900px) { .conversation-form { padding: 24px 20px } }
+/* address layer covers the model; the form sits top-centre, the card bottom-left, clear of the beacon */
+.address { inset: 0; top: 0; left: 0; transform: none; width: auto; display: block; pointer-events: none }
+.address-form { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); width: min(620px, calc(100% - 32px)); pointer-events: auto }
+.address-err { position: absolute; top: 86px; left: 50%; transform: translateX(-50%); white-space: nowrap; pointer-events: auto }
+.address-card { position: absolute; left: 20px; bottom: 44px; pointer-events: auto }
+@media (max-width: 700px) { .address-form { top: 12px } .address-card { left: 12px; right: 12px; bottom: 40px; width: auto } .address-err { white-space: normal; width: calc(100% - 24px); text-align: center } }
+
+/* ---------- performance: keep scrolling smooth over the films ---------- */
+/* the animated full-screen grain blended over every video was the heaviest layer on the page */
+body::after { display: none !important; animation: none !important }
+/* blurs over moving video repaint every frame; use solid tints instead */
+.masthead.is-solid { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; background: #121a15f5 }
+.conversation-form { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; background: #0e1712e6 }
+.address-form, .address-card { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; background: #0e1712f0 }
+.film { contain: strict }
+.film video { backface-visibility: hidden }
+.chapter, .cine { contain: paint }
+/* the cursor ring grows with transform (GPU) rather than width/height */
+.has-cursor .cursor-ring { width: 34px !important; height: 34px !important; margin: -17px 0 0 -17px !important; transition: background .3s, border-color .3s, opacity .25s, scale .35s cubic-bezier(.2,.7,.2,1) }
+.has-cursor .cursor-ring.on { scale: 1.7 }
+.has-cursor .cursor-ring.labelled { scale: 2.3 }
+.has-cursor .cursor-ring span { font-size: 5px; letter-spacing: .14em }
+.cursor-down .cursor-ring { scale: .8 }
+
+/* address search: suggestions, popular areas, distances */
+.address-form.is-open { border-radius: 26px 26px 0 0 }
+.address-suggest, .address-popular { position: absolute; left: -1px; right: -1px; top: 100%; margin: 0; padding: 6px 0 10px; list-style: none; background: #0e1712f7; border: 1px solid var(--brass); border-top: 1px solid #c4a87833; border-radius: 0 0 20px 20px; box-shadow: 0 30px 60px #0009; z-index: 2 }
+.address-suggest button { display: flex; width: 100%; align-items: baseline; justify-content: space-between; gap: 16px; padding: 11px 22px; min-height: 0; text-align: left; color: var(--ivory); transition: background .2s }
+.address-suggest button span { font: 500 19px/1.2 var(--serif) }
+.address-suggest button em { font: 400 12px/1 var(--sans); font-style: normal; color: var(--stone); white-space: nowrap }
+.address-suggest button:hover, .address-suggest button.on { background: #c4a8781f }
+.address-suggest button:hover span, .address-suggest button.on span { color: var(--brass) }
+.address-popular { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 14px 18px 16px }
+.address-popular > span { width: 100%; font: 500 10px/1 var(--sans); letter-spacing: .16em; text-transform: uppercase; color: var(--stone); margin-bottom: 2px }
+.address-popular button { min-height: 0; padding: 8px 14px; border: 1px solid #c4a87855; border-radius: 999px; color: var(--ivory); font: 400 13px/1 var(--sans); transition: background .25s, border-color .25s, color .25s }
+.address-popular button:hover { background: var(--brass); border-color: var(--brass); color: var(--moss) }
+.address-dist { list-style: none; padding: 0; margin: 14px 0 2px; display: grid; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); gap: 10px 14px; border-top: 1px solid var(--line); padding-top: 12px }
+.address-dist li { font: 400 11px/1.3 var(--sans); color: var(--stone) }
+.address-dist strong { font: 500 24px/1 var(--serif); color: var(--brass); margin-right: 3px; font-variant-numeric: lining-nums }
+.address-dist span { display: block; margin-top: 3px }
+/* chips and suggestions are buttons inside the form: keep them out of the brass submit style */
+.address-form .address-popular button { background: transparent; color: var(--ivory); padding: 8px 14px; font: 400 13px/1 var(--sans); letter-spacing: 0; text-transform: none; border-radius: 999px; border: 1px solid #c4a87855 }
+.address-form .address-popular button:hover { background: var(--brass); color: var(--moss); border-color: var(--brass) }
+.address-form .address-suggest button { background: transparent; border-radius: 0; padding: 11px 22px; letter-spacing: 0; text-transform: none; font: inherit; color: var(--ivory) }
+.address-form .address-suggest button:hover, .address-form .address-suggest button.on { background: #c4a8781f }

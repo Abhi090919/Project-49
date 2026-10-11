@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 /* Project 49 world: the interactive layer of the site.
    Threshold (doors that open as you scroll), a brass cursor, a progress rail,
@@ -11,13 +12,17 @@ function useSceneProgress(ref) {
   const [p, setP] = useState(0);
   useEffect(() => {
     if (!ref.current) return;
-    let queued = false;
+    let queued = false, last = -1;
     const draw = () => {
       queued = false;
       const el = ref.current; if (!el) return;
       const r = el.getBoundingClientRect();
       const total = r.height - window.innerHeight;
-      setP(total > 0 ? Math.min(1, Math.max(0, -r.top / total)) : (r.top < 0 ? 1 : 0));
+      const v = total > 0 ? Math.min(1, Math.max(0, -r.top / total)) : (r.top < 0 ? 1 : 0);
+      /* only re-render when it moves enough to matter, and not at all while off screen */
+      if (r.bottom < -50 || r.top > window.innerHeight + 50) { if (last === v) return; }
+      if (Math.abs(v - last) < 0.004 && v !== 0 && v !== 1) return;
+      last = v; setP(v);
     };
     const on = () => { if (!queued) { queued = true; requestAnimationFrame(draw); } };
     draw();
@@ -85,6 +90,21 @@ const STEPS = [
 ];
 
 /* Bespoke does not have to mean slow: the path drawn in brass as you scroll. */
+
+/* Line icons for the five steps. Drawn with pathLength=1 so they can "draw in" as the step lights up. */
+const ICONS = [
+  // walk the land: low sun over contour lines
+  <><circle pathLength="1" cx="32" cy="20" r="7" /><path pathLength="1" d="M8 40c8-5 16-5 24 0s16 5 24 0" /><path pathLength="1" d="M8 48c8-5 16-5 24 0s16 5 24 0" /><path pathLength="1" d="M14 56c6-3.5 12-3.5 18 0s12 3.5 18 0" /></>,
+  // choose a philosophy: seven points on a ring, one chosen
+  <><circle pathLength="1" cx="32" cy="32" r="20" />{[0,1,2,3,4,5,6].map(i => { const a = -Math.PI / 2 + i * 2 * Math.PI / 7; return <circle pathLength="1" key={i} className={i === 0 ? 'ic-fill' : ''} cx={(32 + 20 * Math.cos(a)).toFixed(2)} cy={(32 + 20 * Math.sin(a)).toFixed(2)} r={i === 0 ? 4 : 2.2} />; })}<path pathLength="1" d="M32 32V12" /></>,
+  // design settled upfront: a plan on a sheet with a set square
+  <><rect pathLength="1" x="10" y="12" width="40" height="40" /><path pathLength="1" d="M10 30h18v22M28 30V12M36 52V38h14" /><path pathLength="1" d="M40 8l16 16-16 0z" /></>,
+  // one point of contact: many lines meeting at one point
+  <><circle pathLength="1" className="ic-fill" cx="32" cy="32" r="4" /><path pathLength="1" d="M32 32L8 12M32 32L56 12M32 32L8 52M32 32L56 52M32 32V6M32 32v26" /><circle pathLength="1" cx="8" cy="12" r="2.4" /><circle pathLength="1" cx="56" cy="12" r="2.4" /><circle pathLength="1" cx="8" cy="52" r="2.4" /><circle pathLength="1" cx="56" cy="52" r="2.4" /><circle pathLength="1" cx="32" cy="6" r="2.4" /><circle pathLength="1" cx="32" cy="58" r="2.4" /></>,
+  // move in: a key
+  <><circle pathLength="1" cx="20" cy="32" r="10" /><circle pathLength="1" cx="20" cy="32" r="3.5" /><path pathLength="1" d="M30 32h26M48 32v8M54 32v6" /></>,
+];
+
 export function Delivery() {
   const ref = useRef(null);
   const p = useSceneProgress(ref);
@@ -103,6 +123,7 @@ export function Delivery() {
           {STEPS.map((s, i) => (
             <li key={s.t} className={i <= active ? 'on' : ''}>
               <span className="path-dot" aria-hidden="true" />
+              <svg className="path-icon" viewBox="0 0 64 64" aria-hidden="true">{ICONS[i]}</svg>
               <span className="path-n">{String(i + 1).padStart(2, '0')}</span>
               <h3>{s.t}</h3>
               <p>{s.d}</p>
@@ -182,38 +203,64 @@ export function Rail() {
 
 /* A brass ring that follows the pointer, grows over anything you can open and names it. */
 export function Cursor() {
-  const ring = useRef(null), dot = useRef(null), [label, setLabel] = useState(''), [on, setOn] = useState(false);
+  const ring = useRef(null), dot = useRef(null), text = useRef(null);
+  const [host, setHost] = useState(null);
   useEffect(() => {
     if (reduce() || !window.matchMedia('(pointer: fine)').matches) return;
-    document.documentElement.classList.add('has-cursor');
-    let x = innerWidth / 2, y = innerHeight / 2, rx = x, ry = y, raf;
+    const el = document.createElement('div'); el.className = 'cursor-layer'; el.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(el); setHost(el);
+    return () => { el.remove(); };
+  }, []);
+  useEffect(() => {
+    if (!host) return;
+    const root = document.documentElement; root.classList.add('has-cursor');
+    let x = -100, y = -100, rx = x, ry = y, raf = 0, last = '', lastOn = false, idle = 0;
+    const SEL = 'a, button, [data-cursor], select, input, textarea, label, [role="button"], .pin';
+    const place = () => {
+      // ring follows closely (no long trailing lag); dot is exact
+      rx += (x - rx) * 0.5; ry += (y - ry) * 0.5;
+      if (Math.abs(x - rx) < 0.1 && Math.abs(y - ry) < 0.1) { rx = x; ry = y; }
+      if (ring.current) ring.current.style.transform = `translate3d(${rx}px, ${ry}px, 0)`;
+      if (rx !== x || ry !== y) raf = requestAnimationFrame(place); else raf = 0;
+    };
     const move = e => {
       x = e.clientX; y = e.clientY;
-      document.documentElement.classList.add('cursor-moved');
+      root.classList.add('cursor-moved');
       if (dot.current) dot.current.style.transform = `translate3d(${x}px, ${y}px, 0)`;
-      const t = e.target.closest && e.target.closest('a, button, [data-cursor], select, input, textarea, label');
-      setOn(!!t);
-      setLabel(t ? (t.getAttribute('data-cursor') || '') : '');
-      const mag = e.target.closest && e.target.closest('.enter-link, .btn-solid, .preview-caption button');
-      document.querySelectorAll('.is-magnet').forEach(el => { if (el !== mag) { el.classList.remove('is-magnet'); el.style.transform = ''; } });
+      if (!raf) raf = requestAnimationFrame(place);
+      hover(e.target);
+    };
+    /* what is under the pointer; also re-checked on scroll, when the page moves under a still mouse */
+    const hover = target => {
+      const t = target && target.closest ? target.closest(SEL) : null;
+      const typing = !!(t && t.matches('input, textarea, select'));
+      root.classList.toggle('cursor-text', typing);
+      const lab = t && !typing ? (t.getAttribute('data-cursor') || '') : '';
+      if (!!t !== lastOn || lab !== last) {
+        lastOn = !!t; last = lab;
+        if (ring.current) { ring.current.classList.toggle('on', lastOn && !typing); ring.current.classList.toggle('labelled', !!lab); }
+        if (text.current) text.current.textContent = lab;
+      }
+      const mag = target && target.closest && target.closest('.enter-link, .btn-solid, .preview-caption button');
+      document.querySelectorAll('.is-magnet').forEach(m => { if (m !== mag) { m.classList.remove('is-magnet'); m.style.transform = ''; } });
       if (mag) {
         const r = mag.getBoundingClientRect();
-        const dx = (x - (r.left + r.width / 2)) * 0.18, dy = (y - (r.top + r.height / 2)) * 0.25;
-        mag.classList.add('is-magnet'); mag.style.transform = `translate(${dx.toFixed(1)}px, ${dy.toFixed(1)}px)`;
+        mag.classList.add('is-magnet'); mag.style.transform = `translate(${((x - (r.left + r.width / 2)) * 0.12).toFixed(1)}px, ${((y - (r.top + r.height / 2)) * 0.18).toFixed(1)}px)`;
       }
     };
-    const loop = () => { rx += (x - rx) * 0.16; ry += (y - ry) * 0.16; if (ring.current) ring.current.style.transform = `translate3d(${rx}px, ${ry}px, 0)`; raf = requestAnimationFrame(loop); };
-    const leave = () => { if (ring.current) ring.current.style.opacity = 0; if (dot.current) dot.current.style.opacity = 0; };
-    const enter = () => { if (ring.current) ring.current.style.opacity = ''; if (dot.current) dot.current.style.opacity = ''; };
-    window.addEventListener('mousemove', move, { passive: true });
-    document.addEventListener('mouseleave', leave); document.addEventListener('mouseenter', enter);
-    raf = requestAnimationFrame(loop);
-    return () => { cancelAnimationFrame(raf); window.removeEventListener('mousemove', move); document.removeEventListener('mouseleave', leave); document.removeEventListener('mouseenter', enter); document.documentElement.classList.remove('has-cursor'); };
-  }, []);
-  return (
-    <div className="cursor-layer" aria-hidden="true">
-      <div className={'cursor-ring' + (on ? ' on' : '') + (label ? ' labelled' : '')} ref={ring}><span>{label}</span></div>
+    let sTick = 0;
+    const onScroll = () => { if (sTick) return; sTick = requestAnimationFrame(() => { sTick = 0; if (x >= 0) hover(document.elementFromPoint(x, y)); }); };
+    const down = () => root.classList.add('cursor-down'), up = () => root.classList.remove('cursor-down');
+    const leave = () => root.classList.remove('cursor-moved');
+    window.addEventListener('pointermove', move, { passive: true }); window.addEventListener('scroll', onScroll, { passive: true, capture: true });
+    window.addEventListener('pointerdown', down); window.addEventListener('pointerup', up);
+    document.addEventListener('mouseleave', leave);
+    return () => { cancelAnimationFrame(raf); window.removeEventListener('pointermove', move); window.removeEventListener('scroll', onScroll, { capture: true }); window.removeEventListener('pointerdown', down); window.removeEventListener('pointerup', up); document.removeEventListener('mouseleave', leave); root.classList.remove('has-cursor', 'cursor-moved', 'cursor-text', 'cursor-down'); };
+  }, [host]);
+  if (!host) return null;
+  return createPortal(
+    <>
+      <div className="cursor-ring" ref={ring}><span ref={text} /></div>
       <div className="cursor-dot" ref={dot} />
-    </div>
-  );
+    </>, host);
 }
