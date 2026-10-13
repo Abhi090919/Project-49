@@ -6,7 +6,8 @@
 // Levels are balanced against each file's measured loudness, so a quiet
 // recording can sit at 0.9 and a loud one at 0.06 and still feel even.
 
-const HOME = { bed: null }; // no sound on the home page
+// The home page carries the Project 11:59 score, softly, under everything (public/audio/score.mp3).
+const HOME = { bed: ['score', 0.62] };
 
 const IDEAS = {
   LIGHT: { bed: ['morning-birds', 0.25] },

@@ -128,6 +128,9 @@ export async function geocode(raw) {
       if (hit && near(hit)) { const want = significant(q), got = hit.text.toLowerCase(); if (!want.length || want.some(w => got.includes(w))) return pack(hit, i); }
     } catch { /* next candidate */ }
   }
+  /* last resort: the closest well-known name to what was typed */
+  const guess = suggest(raw, 1)[0] || suggest(asked.split(' ').slice(-2).join(' '), 1)[0];
+  if (guess) return { lat: guess.lat, lng: guess.lng, short: guess.name, full: guess.name + ', Hyderabad', approx: true, asked };
   return null;
 }
 
@@ -143,7 +146,7 @@ export function suggest(text, limit = 6) {
     if (k.startsWith(q)) sc = 0;
     else if (k.split(' ').some(w => w.startsWith(q))) sc = 1;
     else if (k.includes(q)) sc = 2;
-    else if (q.length >= 4) { const d = lev(q, k.slice(0, q.length)); if (d <= (q.length >= 7 ? 2 : 1)) sc = 3 + d; }
+    else if (q.length >= 4) { const d = lev(q, k.slice(0, q.length)); if (d <= (q.length >= 5 ? 2 : 1)) sc = 3 + d; }
     if (sc < 99) scored.push([sc, k.length, n]);
   }
   scored.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
@@ -156,6 +159,14 @@ const LANDMARKS = [['HITEC City', [17.4483, 78.3815]], ['Financial District', [1
 export function distances(lat, lng) {
   return LANDMARKS.map(([name, p]) => ({ name, km: km([lat, lng], p) }))
     .filter(x => x.km > 1.2).map(x => ({ name: x.name, km: x.km < 10 ? Math.round(x.km * 2) / 2 : Math.round(x.km) }));
+}
+
+/* well-known places close to a point, nearest first (for "nearby" chips and "use my location") */
+export function nearby(lat, lng, limit = 4, maxKm = 6, exclude = '') {
+  return Object.keys(AREA).filter(n => n !== exclude && !/^Road No|Road$|Metro$|Junction$|Flyover$/.test(n))
+    .map(n => ({ name: n, lat: AREA[n][0], lng: AREA[n][1], km: km([lat, lng], AREA[n]) }))
+    .filter(x => x.km <= maxKm && x.km > 0.25).sort((a, b) => a.km - b.km).slice(0, limit)
+    .map(x => ({ ...x, km: x.km < 10 ? Math.round(x.km * 2) / 2 : Math.round(x.km) }));
 }
 
 export default geocode;

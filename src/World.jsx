@@ -105,23 +105,71 @@ const ICONS = [
   <><circle pathLength="1" cx="20" cy="32" r="10" /><circle pathLength="1" cx="20" cy="32" r="3.5" /><path pathLength="1" d="M30 32h26M48 32v8M54 32v6" /></>,
 ];
 
+const STEP_FILMS = ['land', 'idea', 'desk', 'craft', 'home'];
+
+/* One film per step, crossfading as the path is drawn; only the visible film plays. */
+function StepFilm({ active }) {
+  const refs = useRef([]);
+  useEffect(() => {
+    refs.current.forEach((v, i) => {
+      if (!v) return;
+      if (i === active && !reduce()) { v.play().catch(() => {}); } else v.pause();
+    });
+  }, [active]);
+  return (
+    <div className="step-film" aria-hidden="true">
+      {STEP_FILMS.map((f, i) => (
+        <video key={f} ref={el => (refs.current[i] = el)} className={i === active ? 'on' : ''} src={`/cine/${f}.mp4`} poster={`/cine/${f}.jpg`}
+          muted loop playsInline preload={i === active ? 'auto' : 'none'} />
+      ))}
+      <div className="step-film-grade" />
+      <div className="step-film-cap" key={active}>
+        <span>{String(active + 1).padStart(2, '0')} / 05</span>
+        <strong>{STEPS[active].t}</strong>
+      </div>
+      <div className="step-film-ticks">{STEPS.map((s, i) => <i key={s.t} className={i <= active ? 'on' : ''} />)}</div>
+    </div>
+  );
+}
+
 export function Delivery() {
   const ref = useRef(null);
   const p = useSceneProgress(ref);
+  const [picked, setPicked] = useState(null);
   const prog = reduce() ? 1 : Math.min(1, Math.max(0, (p - 0.08) / 0.8));
-  const active = Math.min(STEPS.length - 1, Math.floor(prog * STEPS.length));
+  const scrolled = Math.min(STEPS.length - 1, Math.floor(prog * STEPS.length));
+  const active = picked ?? scrolled;
+  useEffect(() => { setPicked(null); }, [scrolled]);
+  /* select a step: on the scrolling desktop path, glide to the point where it lights up */
+  const go = i => {
+    const el = ref.current; if (!el) return;
+    const total = el.offsetHeight - window.innerHeight;
+    if (total > 40 && getComputedStyle(el.querySelector('.delivery-stage')).position === 'sticky') {
+      const target = el.getBoundingClientRect().top + window.scrollY + total * (0.08 + 0.8 * (i + 0.5) / STEPS.length);
+      window.scrollTo({ top: target, behavior: 'smooth' });
+    } else setPicked(i);
+  };
   return (
     <section className="delivery" id="delivery" ref={ref} aria-labelledby="delivery-h">
       <div className="delivery-stage">
-        <div className="delivery-head">
-          <p className="eyebrow">How we work</p>
-          <h2 id="delivery-h">Bespoke does not have to mean slow.</h2>
-          <p>Clarity upfront, fewer late changes, and a more predictable path to move-in.</p>
+        <div className="delivery-top">
+          <div className="delivery-head">
+            <p className="eyebrow">How we work</p>
+            <h2 id="delivery-h">Bespoke does not have to mean slow.</h2>
+            <p>Clarity upfront, fewer late changes, and a more predictable path to move-in.</p>
+            <ul className="delivery-facts">
+              <li><strong>1</strong><span>person you speak to, start to finish</span></li>
+              <li><strong>5</strong><span>clear steps, from the first walk to the keys</span></li>
+              <li><strong>3</strong><span>things agreed before the first brick: plans, materials, cost</span></li>
+            </ul>
+          </div>
+          <StepFilm active={active} />
         </div>
-        <ol className="path" style={{ '--prog': prog.toFixed(4) }}>
+        <ol className="path" style={{ '--prog': (picked !== null ? (picked + 1) / STEPS.length : prog).toFixed(4) }}>
           <span className="path-line" aria-hidden="true"><i /></span>
           {STEPS.map((s, i) => (
-            <li key={s.t} className={i <= active ? 'on' : ''}>
+            <li key={s.t} className={(i <= active ? 'on' : '') + (i === active ? ' now' : '')}>
+              <button type="button" className="path-hit" onClick={() => go(i)} aria-label={`Step ${i + 1}: ${s.t}`} data-cursor="View" />
               <span className="path-dot" aria-hidden="true" />
               <svg className="path-icon" viewBox="0 0 64 64" aria-hidden="true">{ICONS[i]}</svg>
               <span className="path-n">{String(i + 1).padStart(2, '0')}</span>

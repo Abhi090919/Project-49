@@ -854,3 +854,124 @@ body::after { display: none !important; animation: none !important }
 .address-form .address-popular button:hover { background: var(--brass); color: var(--moss); border-color: var(--brass) }
 .address-form .address-suggest button { background: transparent; border-radius: 0; padding: 11px 22px; letter-spacing: 0; text-transform: none; font: inherit; color: var(--ivory) }
 .address-form .address-suggest button:hover, .address-form .address-suggest button.on { background: #c4a8781f }
+
+/* ---------- How we work: a film for every step ---------- */
+.delivery-stage { gap: clamp(30px, 5vh, 60px) }
+.delivery-top { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: clamp(32px, 5vw, 90px); align-items: center }
+.delivery-head h2 { font-size: clamp(36px, 4.2vw, 66px) }
+.delivery-facts { list-style: none; margin: 28px 0 0; padding: 0; display: flex; gap: clamp(18px, 2.6vw, 40px); border-top: 1px solid var(--line); padding-top: 22px; max-width: 600px }
+.delivery-facts li { flex: 1; min-width: 0 }
+.delivery-facts strong { display: block; font: 400 clamp(34px, 3.2vw, 48px)/1 var(--serif); color: var(--brass); font-variant-numeric: lining-nums }
+.delivery-facts span { display: block; margin-top: 8px; font-size: 13px; line-height: 1.45; color: var(--stone) }
+.step-film { position: relative; aspect-ratio: 16 / 10; max-height: 46svh; width: 100%; overflow: hidden; border-radius: 4px; background: #0b0f0c; box-shadow: 0 30px 80px #0007; outline: 1px solid #c4a87833; outline-offset: 10px }
+.step-film video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transform: scale(1.06); transition: opacity 1.1s var(--ease), transform 6s linear }
+.step-film video.on { opacity: 1; transform: scale(1) }
+.step-film-grade { position: absolute; inset: 0; background: linear-gradient(180deg, #0000 45%, #0b0f0cd9) }
+.step-film-cap { position: absolute; left: 24px; bottom: 22px; right: 24px; animation: capin .9s var(--ease) both }
+.step-film-cap span { display: block; font: 500 11px/1 var(--sans); letter-spacing: .22em; color: var(--brass) }
+.step-film-cap strong { display: block; margin-top: 10px; font: 400 clamp(24px, 2.2vw, 34px)/1.1 var(--serif); color: var(--ivory) }
+.step-film-ticks { position: absolute; top: 18px; right: 20px; display: flex; gap: 6px }
+.step-film-ticks i { width: 22px; height: 2px; background: #efebe23d; transition: background .5s }
+.step-film-ticks i.on { background: var(--brass) }
+@keyframes capin { from { opacity: 0; transform: translateY(12px) } to { opacity: 1; transform: none } }
+.path-hit { position: absolute; inset: -14px -10px -10px; z-index: 2; background: none; border: 0; cursor: pointer; border-radius: 6px }
+.path-hit:focus-visible { outline: 1px solid var(--brass) }
+.path li.now h3 { color: var(--brass-soft, var(--brass)) }
+.path li.now .path-dot { box-shadow: 0 0 0 6px #c4a87826 }
+.path li .path-icon { margin: 22px 0 14px -4px; width: 48px; height: 48px }
+@media (max-width: 900px) {
+  .delivery-top { grid-template-columns: 1fr; gap: 34px }
+  .step-film { max-height: none; aspect-ratio: 16 / 11 }
+  .delivery-facts { flex-wrap: wrap }
+  .path li .path-icon { margin: 0 0 12px }
+}
+@media (max-height: 820px) and (min-width: 901px) { .path p { font-size: 14px } .delivery-facts { margin-top: 18px; padding-top: 16px } .step-film { max-height: 40svh } }
+
+/* ---------- The composer (from Project 11:59) ---------- */
+.composer { display: grid; grid-template-columns: 1fr 1fr; gap: 24px 22px }
+.composer fieldset { border: 0; margin: 0; padding: 0; grid-column: 1 / -1; min-width: 0 }
+.composer legend, .composer .field > span, .note-label { display: block; padding: 0; font: 500 10.5px/1 var(--sans); letter-spacing: .2em; text-transform: uppercase; color: #a9b0a3; margin-bottom: 13px }
+.chips { display: flex; flex-wrap: wrap; gap: 8px }
+.chips button { min-height: 38px; padding: 0 15px; border-radius: 999px; border: 1px solid #efebe233; font: 400 13.5px/1 var(--sans); color: #efebe2cc; background: transparent; transition: background .35s, color .35s, border-color .35s }
+.chips button:hover { border-color: #efebe280; color: var(--ivory) }
+.chips button[aria-pressed="true"] { background: var(--ivory); color: #101611; border-color: var(--ivory) }
+.composer .field { grid-column: 1 / -1; display: block; text-transform: none; letter-spacing: 0 }
+.composer .field--half { grid-column: 1 / 2 }
+.composer .field textarea, .composer .field input { width: 100%; background: transparent; border: 0; border-bottom: 1px solid #efebe233; padding: 6px 0 11px; font: italic 400 20px/1.4 var(--serif); color: var(--ivory); resize: none; outline: none; border-radius: 0; transition: border-color .4s }
+.composer .field textarea:focus, .composer .field input:focus { border-color: var(--brass) }
+.composer .field ::placeholder { color: #efebe252 }
+.field-where.is-flash input { border-color: var(--brass); animation: whereflash 1.6s var(--ease) }
+@keyframes whereflash { 0%, 40% { background: #c4a87822 } 100% { background: transparent } }
+.where-mapped { display: flex; align-items: center; gap: 7px; margin-top: 9px; font: 400 12px/1.4 var(--sans); color: var(--brass); letter-spacing: .02em }
+.where-mapped svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.6 }
+.where-mapped a { color: var(--ivory); border-bottom: 1px solid #c4a87866; margin-left: 4px }
+.where-mapped.is-hint a { margin-left: 0; color: #a9b0a3 }
+.note { grid-column: 1 / -1; padding: 18px 20px; border-left: 1px solid var(--brass); background: #efebe208 }
+.note p { margin: 0; font: italic 400 18px/1.5 var(--serif); color: #efebe2e0; white-space: pre-line; min-height: 3em }
+.composer-foot { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 14px 22px; align-items: center }
+.btn-solid { display: inline-flex; align-items: center; gap: 12px; min-height: 50px; padding: 0 26px; background: var(--ivory); color: #101611; font: 500 12px/1 var(--sans); letter-spacing: .14em; text-transform: uppercase; border-radius: 999px; transition: background .35s }
+.btn-solid:hover { background: var(--brass) }
+.composer-foot small { font: 400 12px/1.5 var(--sans); color: #a9b0a3; max-width: 26em }
+@media (max-width: 700px) { .composer { grid-template-columns: 1fr } .composer .field--half { grid-column: 1 / -1 } .btn-solid { width: 100%; justify-content: center } }
+
+/* ---------- Find my land: closer to the form ---------- */
+.address-near { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 14px }
+.address-near > span { width: 100%; font: 500 10px/1 var(--sans); letter-spacing: .16em; text-transform: uppercase; color: var(--stone); margin-bottom: 2px }
+.address-near button { display: inline-flex; gap: 6px; align-items: baseline; padding: 7px 12px; border: 1px solid #c4a87844; border-radius: 999px; font: 400 12.5px/1 var(--sans); color: var(--ivory); background: transparent; transition: background .25s, color .25s, border-color .25s }
+.address-near button em { font-style: normal; font-size: 11px; color: var(--brass); transition: color .25s }
+.address-near button:hover { background: var(--brass); border-color: var(--brass); color: #101611 }
+.address-near button:hover em { color: #101611 }
+.address-card .address-tell { display: flex; width: 100%; justify-content: space-between; align-items: center; margin-top: 16px; padding: 13px 16px; background: var(--brass); color: #101611; border: 0; border-radius: 3px; font: 500 11px/1.2 var(--sans); letter-spacing: .12em; text-transform: uppercase; text-align: left; transition: background .3s }
+.address-card .address-tell span { font-size: 15px; transition: transform .3s var(--ease) }
+.address-card .address-tell:hover { background: var(--ivory); color: #101611 }
+.address-card .address-tell:hover span { transform: translateX(4px) }
+.address-linked { margin: 10px 0 0; font: 400 11.5px/1.3 var(--sans); color: var(--stone) }
+.address-form .address-popular .address-locate { width: 100%; justify-content: flex-start; display: flex; align-items: center; gap: 10px; border: 0; border-bottom: 1px solid #c4a87833; border-radius: 0; padding: 4px 0 14px; margin-bottom: 6px; font: 500 12px/1 var(--sans); letter-spacing: .1em; text-transform: uppercase; color: var(--brass) }
+.address-form .address-popular .address-locate:hover { background: transparent; color: var(--ivory) }
+.address-locate svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.5 }
+
+/* ---------- Sound (from Project 11:59) ---------- */
+.sound-btn { display: flex; align-items: center; gap: 10px; height: 44px; padding: 0 14px; margin-left: auto; margin-right: 10px; background: transparent; border: 0; color: var(--ivory); font: 500 10.5px/1 var(--sans); letter-spacing: .2em; text-transform: uppercase; opacity: .85; cursor: pointer }
+.sound-btn:hover { opacity: 1 }
+.sound-bars { display: flex; align-items: flex-end; gap: 2px; height: 14px }
+.sound-bars i { width: 2px; height: 100%; background: var(--brass); transform-origin: bottom; animation: eq 1.1s ease-in-out infinite }
+.sound-bars i:nth-child(2) { animation-delay: -.3s } .sound-bars i:nth-child(3) { animation-delay: -.6s } .sound-bars i:nth-child(4) { animation-delay: -.8s }
+.sound-btn[aria-pressed="false"] .sound-bars i { animation: none; transform: scaleY(.15) }
+@keyframes eq { 0%, 100% { transform: scaleY(.3) } 50% { transform: scaleY(1) } }
+@media (max-width: 700px) { .sound-txt { display: none } .sound-btn { padding: 0 10px; margin-right: 4px } }
+@media (prefers-reduced-motion: reduce) { .sound-bars i { animation: none; transform: scaleY(.6) } }
+.cine-hero h1 { font-size: clamp(44px, 5.6vw, 96px) }
+@media (max-width: 700px) {
+  .address-card { max-height: calc(100% - 128px); overflow-y: auto; overscroll-behavior: contain; padding: 14px 16px 12px }
+  .address-card h3 { font-size: 22px }
+  .address-dist li:nth-child(n+3) { display: none }
+}
+@media (max-width: 700px) {
+  .address-card { display: flex; flex-direction: column }
+  .address-card .address-tell { margin-top: 12px }
+  .address-near { order: 5 } .address-actions { order: 6 } .address-linked { order: 7 }
+  .address-dist { display: flex; gap: 20px }
+}
+@media (max-width: 700px) { .address-card > * { flex-shrink: 0 } .address-card .address-tell { padding: 12px 14px } }
+
+/* ---------- The city in light ---------- */
+.land-wrap { height: clamp(460px, 78vh, 820px); background: #0b0f0d }
+.city { position: absolute; inset: 0; overflow: hidden; background: radial-gradient(120% 90% at 55% 45%, #15140f 0%, #0b0f0d 60%); cursor: grab; touch-action: pan-y }
+.city:active { cursor: grabbing }
+.city canvas { position: absolute; inset: 0; display: block }
+.city-ov { pointer-events: none }
+.city-gl { opacity: 0; transition: opacity 2.2s var(--ease) }
+.city[data-state="ready"] .city-gl { opacity: 1 }
+.city-loading { position: absolute; left: 50%; top: 52%; transform: translate(-50%, -50%); margin: 0; font: italic 400 20px/1 var(--serif); color: var(--brass); letter-spacing: .02em; animation: citypulse 1.6s ease-in-out infinite }
+@keyframes citypulse { 50% { opacity: .35 } }
+.city-fallback { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .6 }
+.city-zoom { position: absolute; right: 16px; bottom: 16px; display: flex; flex-direction: column; gap: 6px; z-index: 3 }
+.city-zoom button { width: 40px; height: 40px; border-radius: 50%; border: 1px solid #c4a87866; background: #0b0f0dcc; color: var(--ivory); font: 400 18px/1 var(--sans); cursor: pointer; transition: background .25s, color .25s }
+.city-zoom button.city-all { font: 500 9.5px/1 var(--sans); letter-spacing: .12em; text-transform: uppercase }
+.city-zoom button:hover { background: var(--brass); color: #101611 }
+.land-wrap::after { content: ''; position: absolute; inset: 0; pointer-events: none; box-shadow: inset 0 0 120px 40px #0b0f0d; z-index: 1 }
+.land-wrap .address, .land-wrap .land-hint { z-index: 4 }
+@media (max-width: 600px) { .land-wrap { height: 560px } .city-zoom { right: 10px; bottom: 44px } }
+@media (max-width: 700px) { .land-wrap .address-card { max-height: 44%; } }
+.city-credit { position: absolute; right: 64px; bottom: 18px; z-index: 3; font: 400 10px/1 var(--sans); letter-spacing: .04em; color: #efebe266 } .city-credit:hover { color: var(--brass) } @media (max-width: 600px) { .city-credit { right: 12px; bottom: 12px } }
+@media (max-width: 600px) { .land-wrap .land-hint { max-width: 55%; line-height: 1.4 } }

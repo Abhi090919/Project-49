@@ -28,3 +28,6 @@ Retrieved September 11, 2026:
 - future-power-up.mp3 — Electronics power up, Mixkit 2602.
 
 Source-provided MP3 encodings, mixed quietly with fade-ins. No synthetic musical drones.
+
+Score (home page, softly under the site), added October 13, 2026:
+- score.mp3: the Project 11:59 score, shared by both sites. Used in src/sound.js (HOME).

@@ -5,8 +5,8 @@ import PLACES from './data/places';
 import { Soundscape } from './sound';
 import IdeaPreview from './IdeaPreview';
 import Cinema from './Cinema';
-import LandModel, { inModel } from './LandModel';
-import geocode, { suggest, place, distances } from './geocode';
+import CityModel, { inModel } from './CityModel';
+import geocode, { suggest, place, distances, nearby } from './geocode';
 import IntroFilm from './intro/IntroFilm';
 import { Threshold, LitStatement, Delivery, Scarcity, Rail, Cursor } from './World';
 
@@ -124,7 +124,7 @@ function Film({ name, className = '', parallax = 0 }) {
   );
 }
 
-function Masthead({ solid, hidden }) {
+function Masthead({ solid, hidden, sound, onSound }) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -139,6 +139,9 @@ function Masthead({ solid, hidden }) {
     <>
       <header className={'masthead ' + (solid ? 'is-solid' : '') + (hidden && !menuOpen ? ' is-hidden' : '')}>
         <a className="brand" href="#home"><img src="/marks/elephant-160.png" alt="" /><span>PROJECT 49</span></a>
+        <button type="button" className="sound-btn" aria-pressed={sound} onClick={onSound} aria-label={sound ? 'Sound on, turn off' : 'Sound off, turn on'} data-cursor={sound ? 'Mute' : 'Listen'}>
+          <span className="sound-bars" aria-hidden="true"><i /><i /><i /><i /></span><span className="sound-txt">Sound</span>
+        </button>
         <button className={'menu-toggle ' + (menuOpen ? 'is-open' : '')} onClick={() => setMenuOpen(v => !v)}
           aria-expanded={menuOpen} aria-controls="site-menu" aria-label={menuOpen ? 'Close menu' : 'Open menu'}>
           <i /><i /><i />
@@ -171,7 +174,7 @@ function Opening() {
       <div className="cine-letterbox" aria-hidden="true" />
       <div className="cine-hero-copy">
         <p className="eyebrow">Project 49 · Hyderabad</p>
-        <h1>Same city. Different lives.<br /><em>Why should the homes be the same?</em></h1>
+        <h1>Same city.<br />Different lives.<br /><em>Why should the homes be the same?</em></h1>
         <p className="cine-hero-line">Built around a family. Not around a floor plan.</p>
         <div className="opening-actions">
           <a className="enter-link" href="#idea" data-cursor="Begin">Begin <span>↓</span></a>
@@ -296,13 +299,32 @@ function AddressSearch({ target, setTarget, onFound }) {
     else if (e.key === 'ArrowUp') { e.preventDefault(); setHi(h => (h <= 0 ? list.length : h) - 1); }
     else if (e.key === 'Escape') setOpen(false);
   };
+  const [locating, setLocating] = useState(false);
+  useEffect(() => { if (target?.fromMap) { setQ(target.short); setErr(''); setOpen(false); } }, [target]);
+  const share = (hit, scroll) => {
+    const d = distances(hit.lat, hit.lng)[0];
+    window.dispatchEvent(new CustomEvent('p49:land', { detail: { location: hit.asked || hit.short || hit.full, dist: d ? `${d.km} km to ${d.name}` : '', scroll } }));
+  };
+  useEffect(() => { if (target) share(target, false); }, [target]);
+  const locate = () => {
+    if (!navigator.geolocation) { setErr('Your browser does not share location. Type the area instead.'); return; }
+    setLocating(true); setErr('');
+    navigator.geolocation.getCurrentPosition(pos => {
+      const { latitude: lat, longitude: lng } = pos.coords; setLocating(false);
+      const near = nearby(lat, lng, 1, 25)[0];
+      if (!near) { setErr('You seem to be outside Hyderabad. Type the area of your land instead.'); return; }
+      const label = 'Near ' + near.name;
+      setQ(label); setTarget({ lat, lng, short: label, full: `Where you are now · ${near.km} km from ${near.name}`, approx: false, asked: label }); onFound();
+    }, () => { setLocating(false); setErr('We could not get your location. Type the area of your land instead.'); }, { enableHighAccuracy: true, timeout: 9000 });
+  };
   const sv = target && `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${target.lat},${target.lng}`;
   const sat = target && `https://www.google.com/maps/@${target.lat},${target.lng},420a,35y,0h,65t/data=!3m1!1e3`;
   const dist = target ? distances(target.lat, target.lng) : [];
+  const near = target ? nearby(target.lat, target.lng, 4, 6, target.short) : [];
   const tell = () => {
-    const el = document.querySelector('#conversation input[name="location"]');
-    if (el) { el.value = target.asked || target.full; el.dispatchEvent(new Event('input', { bubbles: true })); }
-    document.getElementById('conversation')?.scrollIntoView({ behavior: 'smooth' });
+    share(target, true);
+    const el = document.getElementById('conversation');
+    if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY, behavior: 'smooth' });
   };
   return (
     <div className="address">
@@ -325,6 +347,9 @@ function AddressSearch({ target, setTarget, onFound }) {
         )}
         {open && !q && (
           <div className="address-popular">
+            <button type="button" className="address-locate" onMouseDown={e => e.preventDefault()} onClick={() => { setOpen(false); locate(); }}>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2" /><path d="M12 2v4M12 18v4M2 12h4M18 12h4" /><circle cx="12" cy="12" r="7.5" /></svg>{locating ? 'Finding you…' : 'I am standing on my land'}
+            </button>
             <span>Popular</span>
             {POPULAR.map(n => <button type="button" key={n} onMouseDown={e => e.preventDefault()} onClick={() => choose(n)}>{n}</button>)}
           </div>
@@ -343,12 +368,19 @@ function AddressSearch({ target, setTarget, onFound }) {
           )}
           {target.approx && <p className="address-note">Showing the closest match on the map. We will find your exact plot together on our first visit.</p>}
           {!inModel(target.lat, target.lng) && <p className="address-note">This is beyond the part of the city our model shows. We still come and see land there.</p>}
+          {near.length > 0 && (
+            <div className="address-near">
+              <span>Close by</span>
+              {near.map(n => <button type="button" key={n.name} onClick={() => choose(n.name)} data-cursor="Fly">{n.name}<em>{n.km} km</em></button>)}
+            </div>
+          )}
+          <button type="button" onClick={tell} className="address-tell" data-cursor="Talk">This is my land. Start a conversation <span>→</span></button>
           <div className="address-actions">
             <a href={sv} target="_blank" rel="noopener noreferrer" data-cursor="Walk">Street view ↗</a>
             <a href={sat} target="_blank" rel="noopener noreferrer" data-cursor="Fly">3D satellite ↗</a>
-            <button type="button" onClick={tell} className="address-tell">Tell us about this land</button>
             <button type="button" onClick={() => setTarget(null)} className="address-clear" aria-label="Clear the search">×</button>
           </div>
+          <p className="address-linked">Added to your note below.</p>
         </div>
       )}
     </div>
@@ -356,43 +388,26 @@ function AddressSearch({ target, setTarget, onFound }) {
 }
 
 function Places() {
-  const [active, setActive] = useState(null), [touched, setTouched] = useState(false), [target, setTarget] = useState(null);
-  const wrap = useRef(null);
-  /* A slow guided tour of the places until the visitor takes over. */
-  useEffect(() => {
-    if (touched || window.matchMedia('(prefers-reduced-motion: reduce)').matches || !wrap.current) return;
-    let timer = null, i = -1;
-    const io = new IntersectionObserver(([e]) => {
-      clearInterval(timer);
-      if (!e.isIntersecting) return;
-      timer = setInterval(() => { i = (i + 1) % (PLACES.pins.length + 1); setActive(i === PLACES.pins.length ? null : i); }, 4200);
-    }, { threshold: 0.35 });
-    io.observe(wrap.current);
-    return () => { clearInterval(timer); io.disconnect(); };
-  }, [touched]);
-  const pick = i => { setTouched(true); setActive(i); };
+  const [target, setTarget] = useState(null);
+  /* any light on the map opens the same card as a search */
+  const pick = name => {
+    if (!name) { setTarget(null); return; }
+    const pin = PLACES.pins.find(p => p.name === name);
+    const hit = place(name) || (pin && { lat: pin.lat, lng: pin.lng, short: pin.name, full: pin.name + ', Hyderabad', approx: false, asked: pin.name });
+    if (hit) setTarget({ ...hit, fromMap: true });
+  };
   return (
     <section className="places" id="places">
       <div className="section-heading" data-reveal>
         <p className="eyebrow">03 / Where we build</p>
         <h2 data-lines>The green west<br /><em>of Hyderabad.</em></h2>
-        <p>Where there is still room for a garden and a tree, and the city is close. Type your plot's address to fly to it, or select a place below.</p>
+        <p>Where there is still room for a garden and a tree, and the city is close. Type your plot's address to fly to it, or select any place on the map.</p>
       </div>
-      <div className="places-map land-wrap" ref={wrap} data-reveal>
-        <LandModel places={PLACES.pins} active={target ? null : active} target={target} onSelect={i => { setTarget(null); pick(i); }} />
-        <AddressSearch target={target} setTarget={setTarget} onFound={() => { setTouched(true); setActive(null); }} />
-        <p className="land-hint" aria-hidden="true">Move to tilt · select a light to fly there</p>
+      <div className="places-map land-wrap" data-reveal>
+        <CityModel places={PLACES.pins} target={target} onPick={pick} />
+        <AddressSearch target={target} setTarget={setTarget} onFound={() => {}} />
+        <p className="land-hint" aria-hidden="true">Drag to turn the city · select any light</p>
       </div>
-      <ul className="places-list" data-reveal>
-        {PLACES.pins.map((p, i) => (
-          <li key={p.name}>
-            <button type="button" className={active === i ? 'on' : ''} aria-pressed={active === i} onClick={() => { setTarget(null); pick(active === i ? null : i); }} data-cursor="Fly">
-              <em className="places-n">{String(i + 1).padStart(2, '0')}</em>
-              <strong>{p.name}</strong><span>{p.note}</span>
-            </button>
-          </li>
-        ))}
-      </ul>
     </section>
   );
 }
@@ -420,36 +435,48 @@ function People() {
   );
 }
 
+/* The composer (from Project 11:59): a few taps write a private note, which opens in WhatsApp.
+   "Find my land" fills the land part in for the visitor (event: p49:land). */
+const LAND = [['own', 'We own land', 'We already own the land'], ['finding', 'We’re finding land', 'We are finding land'], ['deciding', 'Still deciding', 'We are still deciding on land']];
+const PEOPLE = [['the two of us', 'The two of us'], ['our children', 'Our children'], ['our parents', 'Our parents'], ['grandchildren, one day', 'Generations to come'], ['guests, often', 'Guests, often']];
+const listJoin = a => (a.length < 2 ? a.join('') : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1]);
+
+function Chips({ options, value, onChange, single, label }) {
+  const on = v => (single ? value === v : value.includes(v));
+  const flip = v => single ? onChange(value === v ? '' : v) : onChange(on(v) ? value.filter(x => x !== v) : [...value, v]);
+  return (
+    <div className="chips" role="group" aria-label={label}>
+      {options.map(([v, t]) => <button key={v} type="button" aria-pressed={on(v)} onClick={() => flip(v)}>{t}</button>)}
+    </div>
+  );
+}
+
 function Conversation() {
-  const [sent, setSent] = useState(false);
-  const [busy, setBusy] = useState(false);
+  const [land, setLand] = useState(''), [where, setWhere] = useState(''), [mapped, setMapped] = useState(null);
+  const [people, setPeople] = useState([]), [idea, setIdea] = useState(''), [dream, setDream] = useState(''), [name, setName] = useState('');
+  const [sent, setSent] = useState(false), [flash, setFlash] = useState(false);
+  useEffect(() => {
+    const onLand = e => {
+      const d = e.detail || {};
+      setWhere(d.location || ''); setMapped(d); setLand(l => l || 'own');
+      if (d.scroll) { setFlash(true); setTimeout(() => setFlash(false), 1800); }
+    };
+    window.addEventListener('p49:land', onLand);
+    return () => window.removeEventListener('p49:land', onLand);
+  }, []);
   if (!CONTACT.enabled) return null;
   const wa = CONTACT.whatsapp ? `https://wa.me/${CONTACT.whatsapp.replace(/\D/g, '')}` : null;
-  const channel = CONTACT.endpoint || CONTACT.email || wa;
 
-  const submit = async e => {
-    e.preventDefault();
-    const data = Object.fromEntries(new FormData(e.currentTarget));
-    if (CONTACT.endpoint) {
-      setBusy(true);
-      try {
-        const r = await fetch(CONTACT.endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(data) });
-        if (!r.ok) throw new Error();
-        setSent(true);
-      } catch { alert('That did not go through. Please write to us directly instead.'); }
-      setBusy(false);
-    } else if (!CONTACT.email && wa) {
-      const ideaLine = data.idea ? `The philosophy I like: ${data.idea}` : 'Not sure which philosophy yet';
-      const landLine = data.land === 'own' ? 'I own a plot' : data.land === 'looking' ? 'I am looking for land' : 'No land yet';
-      const text = `Hello Project 49,\n\nI am ${data.name}.\n${landLine}${data.location ? ` in ${data.location}` : ''}.\n${ideaLine}.${data.message ? `\n\n${data.message}` : ''}\n\nYou can reach me on ${data.reach}.`;
-      window.open(`${wa}?text=${encodeURIComponent(text)}`, '_blank', 'noopener');
-      setSent(true);
-    } else {
-      const body = `Name: ${data.name}\nPhone / email: ${data.reach}\nLand: ${data.land}\nLocation: ${data.location}\nIdea: ${data.idea}\n\n${data.message}`;
-      location.href = `mailto:${CONTACT.email}?subject=${encodeURIComponent('Project 49: my land')}&body=${encodeURIComponent(body)}`;
-      setSent(true);
-    }
-  };
+  const lines = ['Hello Project 49,'];
+  if (name.trim()) lines.push(`I’m ${name.trim()}.`);
+  const landLine = LAND.find(x => x[0] === land)?.[2];
+  if (landLine || where.trim()) lines.push(`${landLine || 'Our land'}${where.trim() ? `, in ${where.trim()}` : ''}.`);
+  if (people.length) lines.push(`The home is for ${listJoin(people)}.`);
+  if (idea) lines.push(idea === 'EXPLORING' ? 'We’re still exploring which philosophy feels like home.' : `The philosophy that feels like home: ${ideaName(idea)}.`);
+  if (dream.trim()) lines.push(`What we imagine: ${dream.trim()}`);
+  if (lines.length === 1 || (lines.length === 2 && name.trim())) lines.push('We’d like to begin a private conversation about our home.');
+  const note = lines.join('\n');
+  const href = wa ? `${wa}?text=${encodeURIComponent(note)}` : CONTACT.email ? `mailto:${CONTACT.email}?subject=${encodeURIComponent('Project 49: our home')}&body=${encodeURIComponent(note)}` : null;
 
   return (
     <section className="cine conversation" id="conversation">
@@ -466,42 +493,51 @@ function Conversation() {
         <div className="private-links">
           {CONTACT.name && <span>{CONTACT.name}</span>}
           {CONTACT.email && <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>}
-          {wa && (CONTACT.endpoint || CONTACT.email) && <a href={wa} target="_blank" rel="noopener noreferrer">Message us on WhatsApp</a>}
           {CONTACT.phone && <a href={`tel:${CONTACT.phone.replace(/\s/g, '')}`}>{CONTACT.phone}</a>}
           {CONTACT.instagram && <a href={`https://instagram.com/${CONTACT.instagram}`} target="_blank" rel="noopener noreferrer">@{CONTACT.instagram}</a>}
         </div>
       </div>
       <div className="conversation-form" data-reveal>
-        {channel ? (
-          sent ? (
-            <p className="sent">Thank you. {CONTACT.endpoint || CONTACT.email ? 'We will call you back within a day.' : 'Your message is ready in WhatsApp; press send and we will call you back within a day.'}</p>
-          ) : (
-            <form onSubmit={submit}>
-              <label>Your name<input name="name" required autoComplete="name" /></label>
-              <label>Phone or email<input name="reach" required autoComplete="tel" /></label>
-              <label>Do you have land?
-                <select name="land" defaultValue="">
-                  <option value="">Not yet</option>
-                  <option value="own">Yes, I own a plot</option>
-                  <option value="looking">I am looking</option>
-                </select>
-              </label>
-              <label>Where is it?<input name="location" autoComplete="address-level2" /></label>
-              <label>A philosophy that speaks to you
-                <select name="idea" defaultValue="">
-                  <option value="">Not sure yet</option>
-                  {chapters.map(c => <option key={c.id} value={c.id}>{ideaName(c.id)} · {c.title}</option>)}
-                </select>
-              </label>
-              <label>Anything else<textarea name="message" rows="3" /></label>
-              <button type="submit" className="enter-link" disabled={busy}>{busy ? 'Sending…' : (CONTACT.endpoint || CONTACT.email ? 'Start a conversation' : 'Send on WhatsApp')} <span>↗</span></button>
-              {!CONTACT.endpoint && !CONTACT.email && wa && <small className="form-alt">Or message us directly on <a href={wa} target="_blank" rel="noopener noreferrer">{CONTACT.whatsapp}</a></small>}
-            </form>
-          )
+        {href ? (
+          <form className="composer" onSubmit={e => e.preventDefault()} noValidate>
+            <fieldset>
+              <legend>The land</legend>
+              <Chips label="The land" single options={LAND.map(([v, t]) => [v, t])} value={land} onChange={setLand} />
+            </fieldset>
+            <label className={'field field-where' + (flash ? ' is-flash' : '')}>
+              <span>Where is it?</span>
+              <input name="location" value={where} onChange={e => { setWhere(e.target.value); setMapped(null); }} placeholder="Area, village or the plot’s address" autoComplete="address-level2" />
+              {mapped && mapped.location === where
+                ? <small className="where-mapped"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6-6.2-6-11a6 6 0 0 1 12 0c0 4.8-6 11-6 11z" /><circle cx="12" cy="10" r="2.2" /></svg>Placed on our map{mapped.dist ? ` · ${mapped.dist}` : ''} <a href="#places">see it ↑</a></small>
+                : <small className="where-mapped is-hint"><a href="#places">Or find it on our map ↑</a></small>}
+            </label>
+            <fieldset>
+              <legend>Who will call it home</legend>
+              <Chips label="Who will call it home" options={PEOPLE} value={people} onChange={setPeople} />
+            </fieldset>
+            <fieldset>
+              <legend>The philosophy that feels like home</legend>
+              <Chips label="The philosophy" single options={[...chapters.map(c => [c.id, ideaName(c.id)]), ['EXPLORING', 'Still exploring']]} value={idea} onChange={setIdea} />
+            </fieldset>
+            <label className="field">
+              <span>In a sentence, the home you imagine</span>
+              <textarea rows="2" value={dream} onChange={e => setDream(e.target.value)} placeholder="Morning light in the kitchen, parents close by, a garden the children grow up in…" />
+            </label>
+            <label className="field field--half">
+              <span>Your name</span>
+              <input value={name} onChange={e => setName(e.target.value)} autoComplete="name" placeholder="Optional" />
+            </label>
+            <div className="note" aria-live="polite">
+              <span className="note-label">Your note</span>
+              <p>{note}</p>
+            </div>
+            <div className="composer-foot">
+              <a className="btn-solid" href={href} target="_blank" rel="noopener noreferrer" data-cursor="Begin" onClick={() => setSent(true)}>Begin a private conversation <span>↗</span></a>
+              <small>{sent ? 'Your note is ready in WhatsApp. Press send there and we will call you back within a day.' : wa ? 'Opens WhatsApp with your note. Nothing is sent until you choose to.' : 'Opens your email with the note written out.'}</small>
+            </div>
+          </form>
         ) : (
-          wa
-            ? <div className="whatsapp-in"><a className="enter-link" href={wa} target="_blank" rel="noopener noreferrer">Message us on WhatsApp <span>↗</span></a><small>{CONTACT.whatsapp}</small></div>
-            : <p className="pending">Enquiries open shortly. Until then, the seven ideas are the best way to get a feel for how we build.</p>
+          <p className="pending">Enquiries open shortly. Until then, the seven ideas are the best way to get a feel for how we build.</p>
         )}
       </div>
     </section>
@@ -542,7 +578,7 @@ function Footer() {
 export default function App() {
   const [hover, setHover] = useState(0), [opened, setOpened] = useState(null), [frame, setFrame] = useState(0);
   const [sound, setSound] = useState(false), [volume, setVolume] = useState(.5), [paused, setPaused] = useState(false);
-  const [progress, setProgress] = useState(0), [visited, setVisited] = useState([]), [muted, setMuted] = useState(false);
+  const [progress, setProgress] = useState(0), [visited, setVisited] = useState([]), [muted, setMuted] = useState(() => { try { return localStorage.getItem('p49-sound') === 'off'; } catch { return false; } });
   const [solid, setSolid] = useState(false), [hideBar, setHideBar] = useState(false);
   const engine = useRef(null), trigger = useRef(null);
   const chapter = opened === null ? null : chapters[opened], scene = chapter?.scenes[frame];
@@ -577,7 +613,27 @@ export default function App() {
       setSound(true); setMuted(false);
     } catch { setSound(false); }
   };
-  const toggleSound = () => { if (sound) { engine.current.suspend(); setSound(false); setMuted(true); } else enable(); };
+  const remember = on => { try { localStorage.setItem('p49-sound', on ? 'on' : 'off'); } catch {} };
+  const toggleSound = () => { if (sound) { engine.current.suspend(); setSound(false); setMuted(true); remember(false); } else { remember(true); enable(); } };
+  /* The score starts with the visitor's first touch once the opening film is over (browsers need a gesture),
+     unless they turned sound off before. Any film playing with its own sound pauses the score. */
+  const soundRef = useRef(sound); soundRef.current = sound;
+  const mutedRef = useRef(muted); mutedRef.current = muted;
+  useEffect(() => {
+    const filmUp = () => document.querySelector('.p49-intro-film, .p49-intro-invite');
+    const first = () => {
+      if (soundRef.current || mutedRef.current || filmUp()) return;
+      enable('HOME'); window.removeEventListener('pointerdown', first, true); window.removeEventListener('keydown', first, true);
+    };
+    window.addEventListener('pointerdown', first, true); window.addEventListener('keydown', first, true);
+    const playing = e => { const v = e.target; if (v.tagName === 'VIDEO' && !v.muted && soundRef.current) engine.current.suspend(); };
+    const stopped = e => { const v = e.target; if (v.tagName === 'VIDEO' && !v.muted && soundRef.current) engine.current.start(); };
+    document.addEventListener('play', playing, true); document.addEventListener('pause', stopped, true); document.addEventListener('ended', stopped, true);
+    return () => {
+      window.removeEventListener('pointerdown', first, true); window.removeEventListener('keydown', first, true);
+      document.removeEventListener('play', playing, true); document.removeEventListener('pause', stopped, true); document.removeEventListener('ended', stopped, true);
+    };
+  }, []);
   const enter = i => {
     if (opened === null) trigger.current = document.activeElement;
     setFrame(0); setProgress(0); setPaused(window.matchMedia('(prefers-reduced-motion: reduce)').matches);
@@ -604,7 +660,7 @@ export default function App() {
   return (
     <>
       <div className="site-shell" inert={chapter ? true : undefined}>
-        <Masthead solid={solid} hidden={hideBar} />
+        <Masthead solid={solid} hidden={hideBar} sound={sound} onSound={toggleSound} />
         <Rail />
         <Cursor />
         <main>
