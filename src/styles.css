@@ -975,3 +975,7 @@ body::after { display: none !important; animation: none !important }
 @media (max-width: 700px) { .land-wrap .address-card { max-height: 44%; } }
 .city-credit { position: absolute; right: 64px; bottom: 18px; z-index: 3; font: 400 10px/1 var(--sans); letter-spacing: .04em; color: #efebe266 } .city-credit:hover { color: var(--brass) } @media (max-width: 600px) { .city-credit { right: 12px; bottom: 12px } }
 @media (max-width: 600px) { .land-wrap .land-hint { max-width: 55%; line-height: 1.4 } }
+
+/* people: credit lines */
+.credit .credit-studio { font: italic 500 clamp(18px, 1.6vw, 24px)/1 var(--serif); letter-spacing: 0; color: #d9dccf }
+.credit .credit-studio + strong { margin-top: 16px }

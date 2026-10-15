@@ -420,14 +420,12 @@ function People() {
       <p className="eyebrow" data-reveal>04 / The people</p>
       <div className="credits-row" data-reveal>
         <div className="credit">
+          <span className="credit-studio">Envisioned by</span>
           <strong>Saketh<br />Bharadwaj</strong>
-          <em>Principal Architect</em>
-          <p>Shapes every home around your family, your land and the light.</p>
         </div>
         <div className="credit">
+          <span className="credit-studio">Brought to life by</span>
           <strong>Divya<br />Dacharla</strong>
-          <em>Managing Partner</em>
-          <p>Your one point of contact, from the first visit to the day you move in.</p>
         </div>
       </div>
       <p className="credits-note" data-reveal>Our people stay with you personally, from the first conversation to the day you move in.</p>

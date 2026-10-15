@@ -19,3 +19,6 @@ command-center/db/*.db-journal
 command-center/logs/
 command-center/assets/work/
 command-center/.runner.lock
+
+# Project 11:59 — separate project, not part of the P49 site
+project-11-59/
