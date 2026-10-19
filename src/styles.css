@@ -979,3 +979,6 @@ body::after { display: none !important; animation: none !important }
 /* people: credit lines */
 .credit .credit-studio { font: italic 500 clamp(18px, 1.6vw, 24px)/1 var(--serif); letter-spacing: 0; color: #d9dccf }
 .credit .credit-studio + strong { margin-top: 16px }
+
+/* phones and portrait screens: no extra zoom on background films (keeps them sharp) */
+@media (max-width: 700px), (orientation: portrait) { .film video { inset: 0; height: 100%; transform: none } }
