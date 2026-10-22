@@ -982,3 +982,41 @@ body::after { display: none !important; animation: none !important }
 
 /* phones and portrait screens: no extra zoom on background films (keeps them sharp) */
 @media (max-width: 700px), (orientation: portrait) { .film video { inset: 0; height: 100%; transform: none } }
+
+/* ============================================================
+   PHONES: every film at its real 16:9 size, never zoomed or cut.
+   The film sits on top of its section; the words follow below it.
+   ============================================================ */
+@media (max-width: 700px) {
+  .cine { display: flex !important; flex-direction: column; align-items: stretch !important; justify-content: flex-start !important; min-height: 0 !important; height: auto !important }
+  .cine > .film { position: relative; inset: auto; z-index: 0; flex: none; width: 100%; aspect-ratio: 16 / 9; overflow: hidden }
+  .cine > .film video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform: none !important }
+  .cine > .film .film-grade, .film-deep .film-grade, .credits.cine .film-grade, .interlude .film-grade { background: linear-gradient(0deg, #070a08 0%, #070a0800 28%) !important }
+  .cine .cine-letterbox { display: none }
+  .cine-hero { padding-top: 72px }
+  .cine-hero-copy { padding: 30px var(--gutter) 96px }
+  .cine-hero .opening-bottom { bottom: 28px }
+  .chapter { position: relative !important; top: auto; height: auto !important; min-height: 0 !important; display: flex }
+  .chapter + .chapter { box-shadow: none; border-top: 1px solid #ffffff12 }
+  .chapter-copy { padding: 26px var(--gutter) 64px }
+  .chapter h2 { font-size: clamp(40px, 11vw, 52px) }
+  .chapter p { margin-top: 18px }
+  .interlude { display: flex; height: auto !important; min-height: 0 !important; text-align: center }
+  .interlude blockquote { padding: 36px var(--gutter) 72px }
+  .interlude p { font-size: clamp(34px, 9.5vw, 46px) }
+  .credits.cine { padding: 0 0 72px !important }
+  .credits.cine > *:not(.film):not(.cine-letterbox) { padding-left: var(--gutter); padding-right: var(--gutter) }
+  .credits.cine > .eyebrow { margin-top: 32px }
+  .conversation.cine { padding-top: 0 !important }
+  .conversation.cine > *:not(.film) { margin-left: var(--gutter); margin-right: var(--gutter) }
+  .conversation.cine > *:not(.film):first-of-type { margin-top: 32px }
+  /* the seven philosophies: picture at 16:9, words under it */
+  .idea-preview { height: auto !important; min-height: 0 !important; display: flex; flex-direction: column }
+  .idea-preview .preview-media { position: relative; inset: auto; width: 100%; aspect-ratio: 16 / 9; height: auto }
+  .idea-preview .preview-shade { display: none }
+  .idea-preview .preview-caption { position: relative; inset: auto; padding: 18px 20px 22px }
+  .idea-preview .preview-number { font-size: 44px; top: 12px; left: 16px; text-shadow: 0 2px 20px #0008 }
+  .step-film { aspect-ratio: 16 / 9 !important; max-height: none }
+  .chapter-hold, .chapter-hold:last-child { height: auto !important } .chapter-hold + .chapter-hold { margin-top: 0 !important } .chapter-hold > .chapter { position: relative !important }
+  .threshold .cine-hero { justify-content: flex-start !important }
+}
