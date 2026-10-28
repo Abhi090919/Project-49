@@ -202,3 +202,26 @@ body.p49-at-gate .masthead { opacity: 0; transform: translateY(-12px); pointer-e
   .p49-lang--film { left: 16px; right: 16px; justify-content: flex-end; }
   .p49-lang--film .p49-lang-label { display: none; }
 }
+
+/* Phone: after the film, a small bobbing down-arrow cue under the ideas */
+.p49-gate-cue { display: none; }
+@media (max-width: 760px), (orientation: portrait) and (max-width: 1024px) {
+  .p49-gate-cue {
+    display: flex; flex-direction: column; align-items: center; gap: 10px;
+    position: absolute; z-index: 2; left: 50%; bottom: calc(clamp(28px, 7vh, 64px) + env(safe-area-inset-bottom, 0px));
+    transform: translateX(-50%); background: none; border: 0; padding: 10px 16px; cursor: pointer;
+    color: rgba(215,192,156,.85); font: 400 10.5px/1 Inter, system-ui, sans-serif; letter-spacing: .26em; text-transform: uppercase;
+    white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity .9s ease .6s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .p49-gate.is-live + .p49-gate-cue { opacity: 1; pointer-events: auto; }
+  .p49-gate-cue-arrows { position: relative; display: block; width: 16px; height: 22px; animation: p49-cue-bob 1.8s cubic-bezier(.45,0,.55,1) infinite; }
+  .p49-gate-cue-arrows i {
+    position: absolute; left: 50%; width: 10px; height: 10px; margin-left: -5px;
+    border-right: 1.5px solid #d7c09c; border-bottom: 1.5px solid #d7c09c; transform: rotate(45deg);
+  }
+  .p49-gate-cue-arrows i:first-child { top: 0; opacity: .45; }
+  .p49-gate-cue-arrows i:last-child { top: 8px; }
+}
+@keyframes p49-cue-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(8px); } }
+@media (prefers-reduced-motion: reduce) { .p49-gate-cue-arrows { animation: none; } }

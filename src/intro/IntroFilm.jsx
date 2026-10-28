@@ -163,6 +163,12 @@ export default function IntroFilm({ onEnterIdea }) {
     <>
       <section className="p49-gate-hero" id="start" ref={heroRef} aria-label="Project 49 - choose a philosophy">
         <div ref={gateEl} />
+        {/* Phone only: once the gate is live, a quiet nudge that the ideas are tappable and the site continues below */}
+        <button type="button" className="p49-gate-cue" aria-label="Scroll down to explore"
+          onClick={() => window.scrollTo({ top: (heroRef.current?.offsetHeight || window.innerHeight), behavior: 'smooth' })}>
+          <span className="p49-gate-cue-text">Tap a philosophy, or scroll</span>
+          <span className="p49-gate-cue-arrows" aria-hidden="true"><i /><i /></span>
+        </button>
       </section>
 
       {overlay && (
