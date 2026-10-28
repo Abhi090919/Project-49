@@ -444,6 +444,16 @@ function People() {
    "Find my land" fills the land part in for the visitor (event: p49:land). */
 const LAND = [['own', 'We own land', 'We already own the land'], ['finding', 'We’re finding land', 'We are finding land'], ['deciding', 'Still deciding', 'We are still deciding on land']];
 const PEOPLE = [['the two of us', 'The two of us'], ['our children', 'Our children'], ['our parents', 'Our parents'], ['grandchildren, one day', 'Generations to come'], ['guests, often', 'Guests, often']];
+// Sheet "Map" column (max 120 chars): a Google Maps link for the place they typed, plus the map distance when they used "Find my land".
+const mapCell = (where, dist) => {
+  const w = where.trim(), d = dist ? ` (${dist})` : '';
+  if (!w) return dist || '';
+  const url = q => `https://maps.google.com/?q=${encodeURIComponent(q)}`;
+  const full = url(/hyderabad/i.test(w) ? w : `${w}, Hyderabad`);
+  if ((full + d).length <= 120) return full + d;
+  if (full.length <= 120) return full;
+  return url(w.split(',')[0]).slice(0, 120);
+};
 const listJoin = a => (a.length < 2 ? a.join('') : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1]);
 
 function Chips({ options, value, onChange, single, label }) {
@@ -488,7 +498,8 @@ function Conversation() {
     if (!CONTACT.endpoint) return;
     const data = {
       name: name.trim(), phone: phone.trim(), land: LAND.find(x => x[0] === land)?.[1] || '', where: where.trim(),
-      map: mapped && mapped.location === where && mapped.dist ? mapped.dist : '', people: listJoin(people),
+      map: mapCell(where, mapped && mapped.location === where ? mapped.dist : ''),
+      people: listJoin(people),
       idea: idea ? (idea === 'EXPLORING' ? 'Still exploring' : ideaName(idea)) : '', dream: dream.trim(), note, website: trap,
     };
     try {

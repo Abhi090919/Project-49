@@ -19,7 +19,7 @@ export const CONTACT = {
   name: '',
   email: '',
   endpoint: 'https://script.google.com/macros/s/AKfycbzrIS_rsEilDkJlSRT7i9Zp5ken35N_MGxaP20gkyM7GQpFW-I6U1AT3N35O0f0G4dn/exec', // Project 49 > Website Leads sheet
-  whatsapp: '+91 90004 43131',
+  whatsapp: '+91 81792 59334', // Project 49 WhatsApp Business
   phone: '',
   instagram: '', // handle without the @
   // Once registered, RERA requires the registration number and the authority
