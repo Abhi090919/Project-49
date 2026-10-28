@@ -1,7 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
+        xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
   <url>
     <loc>https://www.anxainfra.com/</loc>
-    <lastmod>2026-09-11</lastmod>
+    <lastmod>2026-10-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://www.anxainfra.com/og-image-p49.jpg</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.anxainfra.com/city-hyderabad.jpg</image:loc>
+    </image:image>
+    <video:video>
+      <video:thumbnail_loc>https://www.anxainfra.com/og-image-p49.jpg</video:thumbnail_loc>
+      <video:title>Project 49: What Holds</video:title>
+      <video:description>A short film on what a home holds for a family, and why every Project 49 home is drawn for one family and one piece of land in Hyderabad.</video:description>
+      <video:content_loc>https://www.anxainfra.com/film/p49-what-holds.mp4</video:content_loc>
+      <video:duration>63</video:duration>
+    </video:video>
   </url>
 </urlset>
