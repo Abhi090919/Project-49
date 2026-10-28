@@ -483,7 +483,7 @@ h1 em { font-size: .82em }
    ========================================================= */
 .cine { position: relative; overflow: hidden; isolation: isolate; background: #070a08; color: var(--ivory) }
 .film { position: absolute; inset: 0; z-index: -1; overflow: hidden }
-.film video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover } /* no overscan/zoom: films play at native sharpness */
+.film video { position: absolute; inset: -2px 0; width: 100%; height: calc(100% + 4px); object-fit: cover } /* 2px bleed hides the sub-pixel seam at the film edge; still 1:1 */ /* no overscan/zoom: films play at native sharpness */
 .film-grade { position: absolute; inset: 0; background:
   radial-gradient(120% 90% at 50% 45%, transparent 35%, #05080680 100%),
   linear-gradient(0deg, #070a08f0 0%, #070a0899 26%, transparent 58%),
@@ -546,7 +546,7 @@ body::after { content: ''; position: fixed; inset: -50%; z-index: 40; pointer-ev
   .cine-hero-copy { padding-bottom: 120px }
   .chapter-copy { padding-bottom: 96px }
   .chapter p { font-size: 17px }
-  .film video { inset: 0; height: 100%; transform: none }
+  .film video { inset: -2px 0; height: calc(100% + 4px); transform: none }
 }
 @media (prefers-reduced-motion: reduce) { body::after { animation: none } .chapter { position: relative } }
 .cine-hero [data-lines] .ln > i { transform: none; opacity: 1; transition-delay: calc(var(--d, 0ms) + 420ms) }
@@ -864,7 +864,7 @@ body::after { display: none !important; animation: none !important }
 .delivery-facts strong { display: block; font: 400 clamp(34px, 3.2vw, 48px)/1 var(--serif); color: var(--brass); font-variant-numeric: lining-nums }
 .delivery-facts span { display: block; margin-top: 8px; font-size: 13px; line-height: 1.45; color: var(--stone) }
 .step-film { position: relative; aspect-ratio: 16 / 10; max-height: 46svh; width: 100%; overflow: hidden; border-radius: 4px; background: #0b0f0c; box-shadow: 0 30px 80px #0007; outline: 1px solid #c4a87833; outline-offset: 10px }
-.step-film video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 1.1s var(--ease) }
+.step-film video { position: absolute; inset: -1px; width: calc(100% + 2px); height: calc(100% + 2px); object-fit: cover; opacity: 0; transition: opacity 1.1s var(--ease) }
 .step-film video.on { opacity: 1 }
 .step-film-grade { position: absolute; inset: 0; background: linear-gradient(180deg, #0000 45%, #0b0f0cd9) }
 .step-film-cap { position: absolute; left: 24px; bottom: 22px; right: 24px; animation: capin .9s var(--ease) both }
@@ -981,7 +981,7 @@ body::after { display: none !important; animation: none !important }
 .credit .credit-studio + strong { margin-top: 16px }
 
 /* phones and portrait screens: no extra zoom on background films (keeps them sharp) */
-@media (max-width: 700px), (orientation: portrait) { .film video { inset: 0; height: 100%; transform: none } }
+@media (max-width: 700px), (orientation: portrait) { .film video { inset: -2px 0; height: calc(100% + 4px); transform: none } }
 
 /* ============================================================
    PHONES: every film at its real 16:9 size, never zoomed or cut.
@@ -990,7 +990,7 @@ body::after { display: none !important; animation: none !important }
 @media (max-width: 700px), (orientation: portrait) and (max-width: 1100px) {
   .cine { display: flex !important; flex-direction: column; align-items: stretch !important; justify-content: flex-start !important; min-height: 0 !important; height: auto !important }
   .cine > .film { position: relative; inset: auto; z-index: 0; flex: none; width: 100%; aspect-ratio: 16 / 9; overflow: hidden }
-  .cine > .film video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform: none !important }
+  .cine > .film video { position: absolute; inset: -2px 0; width: 100%; height: calc(100% + 4px); object-fit: cover; transform: none !important }
   .cine > .film .film-grade, .film-deep .film-grade, .credits.cine .film-grade, .interlude .film-grade { background: linear-gradient(0deg, #070a08 0%, #070a0800 28%) !important }
   .cine .cine-letterbox { display: none }
   .cine-hero { padding-top: 72px }
