@@ -53,7 +53,7 @@ em { font-style: italic; font-weight: 500; color: var(--gold-deep) }
 .menu-close i:last-child { transform: rotate(-45deg) }
 .site-menu > nav { display: grid; margin-top: 52px; border-top: 1px solid var(--line) }
 .site-menu > nav a { display: grid; grid-template-columns: 38px 1fr; align-items: baseline; padding: 18px 0; border-bottom: 1px solid var(--line); font: 500 clamp(28px, 3vw, 40px)/1 var(--serif); letter-spacing: -.02em }
-.site-menu > nav a span { font: 400 9px/1 var(--sans); letter-spacing: .15em; color: var(--gold) }
+.site-menu > nav a span { font: 400 11px/1 var(--sans); letter-spacing: .15em; color: var(--gold) }
 .menu-commission { display: flex; justify-content: space-between; margin-top: auto; padding: 18px 0; border-top: 1px solid var(--gold); border-bottom: 1px solid var(--gold); color: var(--gold); font-size: 12px; letter-spacing: .08em; text-transform: uppercase }
 .menu-location { margin-top: 28px; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: #aeb5a9 }
 
@@ -967,7 +967,7 @@ body::after { display: none !important; animation: none !important }
 .city-fallback { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .6 }
 .city-zoom { position: absolute; right: 16px; bottom: 16px; display: flex; flex-direction: column; gap: 6px; z-index: 3 }
 .city-zoom button { width: 40px; height: 40px; border-radius: 50%; border: 1px solid #c4a87866; background: #0b0f0dcc; color: var(--ivory); font: 400 18px/1 var(--sans); cursor: pointer; transition: background .25s, color .25s }
-.city-zoom button.city-all { font: 500 9.5px/1 var(--sans); letter-spacing: .12em; text-transform: uppercase }
+.city-zoom button.city-all { font: 500 11px/1 var(--sans); letter-spacing: .12em; text-transform: uppercase }
 .city-zoom button:hover { background: var(--brass); color: #101611 }
 .land-wrap::after { content: ''; position: absolute; inset: 0; pointer-events: none; box-shadow: inset 0 0 120px 40px #0b0f0d; z-index: 1 }
 .land-wrap .address, .land-wrap .land-hint { z-index: 4 }
