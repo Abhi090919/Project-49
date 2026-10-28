@@ -1049,3 +1049,5 @@ body::after { display: none !important; animation: none !important }
 @media (max-width: 700px), (orientation: portrait) {
   .cine > .film::after { content: ''; position: absolute; left: 0; right: 0; bottom: -2px; height: 4px; background: #070a08; z-index: 3; pointer-events: none }
 }
+/* the video layer can be clipped a pixel wider than its box on some screens: trim its own edge so it can never spill past the film box */
+.film video { clip-path: inset(3px 0 3px 0) }
