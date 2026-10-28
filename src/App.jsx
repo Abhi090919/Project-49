@@ -458,7 +458,7 @@ function Chips({ options, value, onChange, single, label }) {
 
 function Conversation() {
   const [land, setLand] = useState(''), [where, setWhere] = useState(''), [mapped, setMapped] = useState(null);
-  const [people, setPeople] = useState([]), [idea, setIdea] = useState(''), [dream, setDream] = useState(''), [name, setName] = useState('');
+  const [people, setPeople] = useState([]), [idea, setIdea] = useState(''), [dream, setDream] = useState(''), [name, setName] = useState(''), [phone, setPhone] = useState(''), [trap, setTrap] = useState('');
   const [sent, setSent] = useState(false), [flash, setFlash] = useState(false);
   useEffect(() => {
     const onLand = e => {
@@ -474,13 +474,27 @@ function Conversation() {
 
   const lines = ['Hello Project 49,'];
   if (name.trim()) lines.push(`I’m ${name.trim()}.`);
+  if (phone.trim()) lines.push(`You can reach me on ${phone.trim()}.`);
   const landLine = LAND.find(x => x[0] === land)?.[2];
   if (landLine || where.trim()) lines.push(`${landLine || 'Our land'}${where.trim() ? `, in ${where.trim()}` : ''}.`);
   if (people.length) lines.push(`The home is for ${listJoin(people)}.`);
   if (idea) lines.push(idea === 'EXPLORING' ? 'We’re still exploring which philosophy feels like home.' : `The philosophy that feels like home: ${ideaName(idea)}.`);
   if (dream.trim()) lines.push(`What we imagine: ${dream.trim()}`);
-  if (lines.length === 1 || (lines.length === 2 && name.trim())) lines.push('We’d like to begin a private conversation about our home.');
+  if (lines.length === 1 || lines.length === 1 + (name.trim() ? 1 : 0) + (phone.trim() ? 1 : 0)) lines.push('We’d like to begin a private conversation about our home.');
   const note = lines.join('\n');
+  // Every note is also kept in the Project 49 > Website Leads sheet (Google Apps Script web app),
+  // so nothing is lost if the visitor never presses send in WhatsApp.
+  const save = () => {
+    if (!CONTACT.endpoint) return;
+    const data = {
+      name: name.trim(), phone: phone.trim(), land: LAND.find(x => x[0] === land)?.[1] || '', where: where.trim(),
+      map: mapped && mapped.location === where && mapped.dist ? mapped.dist : '', people: listJoin(people),
+      idea: idea ? (idea === 'EXPLORING' ? 'Still exploring' : ideaName(idea)) : '', dream: dream.trim(), note, website: trap,
+    };
+    try {
+      fetch(CONTACT.endpoint, { method: 'POST', mode: 'no-cors', keepalive: true, headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(data) }).catch(() => {});
+    } catch (_) { /* never block the conversation */ }
+  };
   const href = wa ? `${wa}?text=${encodeURIComponent(note)}` : CONTACT.email ? `mailto:${CONTACT.email}?subject=${encodeURIComponent('Project 49: our home')}&body=${encodeURIComponent(note)}` : null;
 
   return (
@@ -532,13 +546,18 @@ function Conversation() {
               <span>Your name</span>
               <input value={name} onChange={e => setName(e.target.value)} autoComplete="name" placeholder="Optional" />
             </label>
+            <label className="field field--half">
+              <span>Your phone</span>
+              <input type="tel" inputMode="tel" value={phone} onChange={e => setPhone(e.target.value)} autoComplete="tel" placeholder="So we can call you back" />
+            </label>
+            <input className="hp-field" tabIndex={-1} autoComplete="off" aria-hidden="true" name="website" value={trap} onChange={e => setTrap(e.target.value)} />
             <div className="note" aria-live="polite">
               <span className="note-label">Your note</span>
               <p>{note}</p>
             </div>
             <div className="composer-foot">
-              <a className="btn-solid" href={href} target="_blank" rel="noopener noreferrer" data-cursor="Begin" onClick={() => setSent(true)}>Begin a private conversation <span>↗</span></a>
-              <small>{sent ? 'Your note is ready in WhatsApp. Press send there and we will call you back within a day.' : wa ? 'Opens WhatsApp with your note. Nothing is sent until you choose to.' : 'Opens your email with the note written out.'}</small>
+              <a className="btn-solid" href={href} target="_blank" rel="noopener noreferrer" data-cursor="Begin" onClick={() => { save(); setSent(true); }}>Begin a private conversation <span>↗</span></a>
+              <small>{sent ? (CONTACT.endpoint ? 'We have your note. Press send in WhatsApp too, and we will call you back within a day.' : 'Your note is ready in WhatsApp. Press send there and we will call you back within a day.') : CONTACT.endpoint ? 'Keeps your note with us privately and opens WhatsApp with it.' : wa ? 'Opens WhatsApp with your note. Nothing is sent until you choose to.' : 'Opens your email with the note written out.'}</small>
             </div>
           </form>
         ) : (

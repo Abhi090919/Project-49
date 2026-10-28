@@ -1055,3 +1055,7 @@ body::after { display: none !important; animation: none !important }
 @media (min-width: 701px) and (orientation: landscape), (min-width: 1101px) {
   .cine:not(.conversation) > .film video { clip-path: inset(12px 0 12px 0) }
 }
+/* contact form: phone sits beside name; hidden spam trap */
+.composer .field--half + .field--half { grid-column: 2 / 3 }
+@media (max-width: 700px) { .composer .field--half + .field--half { grid-column: 1 / -1 } }
+.composer .hp-field { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; pointer-events: none }

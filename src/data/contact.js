@@ -18,7 +18,7 @@ export const CONTACT = {
   note: 'Where it is, how your family likes to live, and which philosophy speaks to you. We will call you back and come to see it with you.',
   name: '',
   email: '',
-  endpoint: '',
+  endpoint: 'https://script.google.com/macros/s/AKfycbzrIS_rsEilDkJlSRT7i9Zp5ken35N_MGxaP20gkyM7GQpFW-I6U1AT3N35O0f0G4dn/exec', // Project 49 > Website Leads sheet
   whatsapp: '+91 90004 43131',
   phone: '',
   instagram: '', // handle without the @
