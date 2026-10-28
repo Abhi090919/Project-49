@@ -1032,3 +1032,10 @@ body::after { display: none !important; animation: none !important }
   .footer-end { font-size: 10.5px } .opening-bottom { font-size: 10px }
   .city-credit { padding: 7px 0; font-size: 10.5px }
 }
+
+/* Talk-to-us film: the section is taller than 16:9 on desktop, so keep the film at true 16:9 (1x, no upscaling) and feather its edges into the background */
+@media (min-width: 761px) {
+  .conversation.cine > .film video { top: 50%; bottom: auto; height: auto; aspect-ratio: 16 / 9; translate: 0 -50%;
+    -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 14%, #000 86%, transparent 100%);
+            mask-image: linear-gradient(180deg, transparent 0, #000 14%, #000 86%, transparent 100%) }
+}
