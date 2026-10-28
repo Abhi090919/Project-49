@@ -348,13 +348,14 @@ export class Soundscape {
   async scene(id, sceneId = '') {
     if (!this.ctx) return;
     const token = ++this.generation;
-    const spec = id === 'HOME' ? HOME : (SCENES[sceneId] || IDEAS[id] || HOME);
+    // One soundtrack for the whole site: the philosophy films no longer carry their own
+    // recordings, so the website score simply continues underneath every film.
+    const spec = HOME; id = 'HOME';
     const c = this.ctx;
     try {
       const now = c.currentTime;
       for (const accent of this.accents) this.fadeOut(accent, now);
       this.accents.clear();
-      this.preload(id);
       const [bedName, bedLevel] = spec.bed || [];
       this.bedLevel = bedLevel;
       const mix = this.themeLayer ? 0.4 : 1;

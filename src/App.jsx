@@ -643,7 +643,6 @@ export default function App() {
     try {
       await engine.current.start(); engine.current.volume(volume);
       typeof idea === 'string' ? engine.current.scene(idea, film || '') : engine.current.scene(chapter?.id || 'HOME', scene?.id || '');
-      if (typeof idea === 'string' && idea !== 'HOME') { engine.current.sting(idea); engine.current.theme(idea); }
       if (idea === 'HOME') engine.current.theme(null);
       setSound(true); setMuted(false);
     } catch { setSound(false); }
@@ -673,7 +672,7 @@ export default function App() {
     if (opened === null) trigger.current = document.activeElement;
     setFrame(0); setProgress(0); setPaused(window.matchMedia('(prefers-reduced-motion: reduce)').matches);
     setOpened(i); setHover(i); setVisited(v => [...new Set([...v, i])]);
-    if (sound) { engine.current.start(); engine.current.sting(chapters[i].id); engine.current.theme(chapters[i].id); engine.current.scene(chapters[i].id, chapters[i].scenes[0]?.id || ''); }
+    if (sound) { engine.current.start(); engine.current.scene('HOME'); }
     else if (!muted) enable(chapters[i].id, chapters[i].scenes[0]?.id);
   };
   const leave = () => { setOpened(null); if (sound) { engine.current.start(); engine.current.theme(null); engine.current.scene('HOME'); } requestAnimationFrame(() => trigger.current?.focus()); };
