@@ -11,7 +11,9 @@ import './ideas-gate.css';
    It stays as the top screen of the site (every later visit and refresh lands on it directly).
    Clicking an idea opens that idea; the rest of the website continues below when you scroll. */
 
-const FILM = '/film/p49-what-holds.mp4';
+// One picture, three voiceovers. English is always the default; the visitor can switch before or during the film.
+const FILMS = { en: '/film/p49-what-holds.mp4', te: '/film/p49-what-holds-te.mp4', hi: '/film/p49-what-holds-hi.mp4' };
+const LANGS = [['en', 'English'], ['te', 'తెలుగు'], ['hi', 'हिंदी']];
 const GATE_STARTS_AT = 51.58;          // second of the film where the Ideas Gate begins
 const SEEN_KEY = 'p49-intro-seen';
 const CC_KEY = 'p49-film-captions';     // remembers if a visitor turned captions off
@@ -34,6 +36,7 @@ function firstOverlay() {
 export default function IntroFilm({ onEnterIdea }) {
   const [overlay, setOverlay] = useState(firstOverlay); // 'invite' | 'film' | null
   const [muted, setMuted] = useState(false);
+  const [lang, setLang] = useState('en');
   const [cc, setCc] = useState(captionsOn);
   const [cue, setCue] = useState(-1);                    // index of the caption on screen, -1 = none
   const [shade, setShade] = useState(false);
@@ -127,6 +130,30 @@ export default function IntroFilm({ onEnterIdea }) {
     if (v.paused) v.play().catch(() => {});
   };
 
+  // Switch the voiceover without losing the moment: same picture, so resume at the same second.
+  const chooseLang = l => {
+    if (l === lang) return;
+    const v = videoRef.current;
+    const t = v ? v.currentTime : 0, playing = v ? !v.paused : false;
+    setLang(l);
+    if (!v) return;
+    const resume = () => {
+      v.removeEventListener('loadedmetadata', resume);
+      try { v.currentTime = t; } catch {}
+      if (playing) v.play().catch(() => {});
+    };
+    v.addEventListener('loadedmetadata', resume);
+  };
+
+  const langSwitch = cls => (
+    <div className={'p49-lang ' + cls} role="group" aria-label="Film language">
+      <span className="p49-lang-label" aria-hidden="true">Translate</span>
+      {LANGS.map(([k, t]) => (
+        <button key={k} type="button" lang={k} aria-pressed={lang === k} onClick={() => chooseLang(k)}>{t}</button>
+      ))}
+    </div>
+  );
+
   const toggleCaptions = () => setCc(on => {
     try { localStorage.setItem(CC_KEY, on ? 'off' : 'on'); } catch {}
     return !on;
@@ -140,7 +167,7 @@ export default function IntroFilm({ onEnterIdea }) {
 
       {overlay && (
         <div className={'p49-intro-film' + (leaving ? ' is-leaving' : '')}>
-          <video ref={videoRef} src={FILM} playsInline preload="auto" style={{ opacity: overlay === 'film' ? 1 : 0 }}
+          <video ref={videoRef} src={FILMS[lang]} playsInline preload="auto" style={{ opacity: overlay === 'film' ? 1 : 0 }}
             onEnded={onEnded} onError={onError} />
           {overlay === 'film' && (
             <>
@@ -154,6 +181,7 @@ export default function IntroFilm({ onEnterIdea }) {
               <button className="p49-intro-skip p49-intro-sound" onClick={toggleSound}>{muted ? 'Sound on' : 'Sound off'}</button>
               {FILM_CAPTIONS.length > 0 && <button className="p49-intro-skip p49-intro-cc" onClick={toggleCaptions} aria-pressed={cc}>{cc ? 'Captions off' : 'Captions on'}</button>}
               <button className="p49-intro-skip" onClick={skip}>Skip film</button>
+              {langSwitch('p49-lang--film')}
             </>
           )}
         </div>
@@ -168,6 +196,7 @@ export default function IntroFilm({ onEnterIdea }) {
             <span className="p49-invite-play" aria-hidden="true" />Begin
           </button>
           <p className="p49-invite-note">A short film · best with sound</p>
+          {langSwitch('p49-lang--invite')}
           <button className="p49-invite-skip" onClick={() => { gate.current?.play(0); endFilm(); }}>Skip the film</button>
         </div>
       )}

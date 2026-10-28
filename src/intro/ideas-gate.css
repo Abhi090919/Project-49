@@ -185,3 +185,20 @@ body.p49-at-gate .masthead { opacity: 0; transform: translateY(-12px); pointer-e
   .p49-film-caption { animation: none; }
   .p49-gate-name::after, .p49-gate-enter { transition: none; }
 }
+
+/* Film language (voiceover): English default, Telugu, Hindi */
+.p49-lang { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; justify-content: center; }
+.p49-lang-label { font: 400 10.5px/1 Inter, system-ui, sans-serif; letter-spacing: .28em; text-transform: uppercase; color: rgba(239,236,228,.6); margin-right: 6px; }
+.p49-lang button {
+  background: none; border: 1px solid rgba(239,236,228,.28); color: rgba(239,236,228,.8); cursor: pointer;
+  font: 400 13px/1 Inter, 'Nirmala UI', 'Noto Sans Telugu', 'Noto Sans Devanagari', system-ui, sans-serif;
+  padding: 9px 14px; min-height: 36px; border-radius: 999px; transition: background .3s, color .3s, border-color .3s;
+}
+.p49-lang button:hover { border-color: rgba(239,236,228,.6); color: #efece4; }
+.p49-lang button[aria-pressed="true"] { background: #efece4; color: #101611; border-color: #efece4; }
+.p49-lang--invite { margin-top: 22px; }
+.p49-lang--film { position: fixed; z-index: 62; top: clamp(16px, 3vh, 32px); right: clamp(20px, 4vw, 56px); }
+@media (max-width: 600px) {
+  .p49-lang--film { left: 16px; right: 16px; justify-content: flex-end; }
+  .p49-lang--film .p49-lang-label { display: none; }
+}
