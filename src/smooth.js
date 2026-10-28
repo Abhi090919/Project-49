@@ -23,6 +23,15 @@ export async function startSmoothScroll() {
     if (!Lenis) return null;
     lenis = new Lenis({ lerp: 0.085, wheelMultiplier: 0.9, smoothWheel: true, syncTouch: false });
     const raf = t => { if (!lenis) return; lenis.raf(t); requestAnimationFrame(raf); };
+    // Keyboard users: Lenis owns the scroll position, so the browser's own "scroll the focused
+    // element into view" gets overridden. Bring a keyboard-focused element into view ourselves.
+    document.addEventListener('focusin', e => {
+      const el = e.target;
+      if (!lenis || !el || !el.matches || !el.matches(':focus-visible')) return;
+      if (el.closest('[role="dialog"], .site-menu, .experience')) return;
+      const r = el.getBoundingClientRect();
+      if (r.top < 90 || r.bottom > window.innerHeight - 40) lenis.scrollTo(el, { offset: -Math.round(window.innerHeight * 0.3), duration: 0.6 });
+    });
     requestAnimationFrame(raf);
     if (stopped) lenis.stop();
     return lenis;

@@ -41,13 +41,13 @@ export function mountGate(root, { onSelect, onEnter, mark = '/marks/elephant.png
   const rule = h('div', 'p49-gate-rule');
   const tagline = h('p', 'p49-gate-tagline', 'One of one.');
 
-  const list = h('div', 'p49-gate-ideas'); list.setAttribute('role', 'list');
+  const list = h('div', 'p49-gate-ideas'); list.setAttribute('role', 'group'); list.setAttribute('aria-label', 'The seven design philosophies');
   const items = [];
   [[0, 1, 2, 3], [4, 5, 6]].forEach(row => {
     const r = h('div', 'p49-gate-row');
     row.forEach(i => {
       const d = GATE_IDEAS[i];
-      const b = h('button', 'p49-gate-idea'); b.type = 'button'; b.setAttribute('role', 'listitem');
+      const b = h('button', 'p49-gate-idea'); b.type = 'button';
       b.setAttribute('aria-label', `Explore ${d.name}`);
       b.append(h('span', 'p49-gate-num', d.num), h('span', 'p49-gate-name', d.name));
       b.addEventListener('click', () => onSelect && onSelect(d.index, d));

@@ -987,7 +987,7 @@ body::after { display: none !important; animation: none !important }
    PHONES: every film at its real 16:9 size, never zoomed or cut.
    The film sits on top of its section; the words follow below it.
    ============================================================ */
-@media (max-width: 700px) {
+@media (max-width: 700px), (orientation: portrait) and (max-width: 1100px) {
   .cine { display: flex !important; flex-direction: column; align-items: stretch !important; justify-content: flex-start !important; min-height: 0 !important; height: auto !important }
   .cine > .film { position: relative; inset: auto; z-index: 0; flex: none; width: 100%; aspect-ratio: 16 / 9; overflow: hidden }
   .cine > .film video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform: none !important }
@@ -1019,4 +1019,16 @@ body::after { display: none !important; animation: none !important }
   .step-film { aspect-ratio: 16 / 9 !important; max-height: none }
   .chapter-hold, .chapter-hold:last-child { height: auto !important } .chapter-hold + .chapter-hold { margin-top: 0 !important } .chapter-hold > .chapter { position: relative !important }
   .threshold .cine-hero { justify-content: flex-start !important }
+}
+
+/* ============================================================
+   Audit fixes (Oct 2026): readable contrast and touch-sized links
+   ============================================================ */
+.section-heading > p:last-child { opacity: .82 }
+.idea-number { color: #8f9588 }
+@media (max-width: 700px), (pointer: coarse) {
+  .opening-bottom a, .footer-end a, .where-mapped a { display: inline-flex; align-items: center; min-height: 24px }
+  .footer-nav { gap: 2px } .footer-nav a { display: block; padding: 6px 0 }
+  .footer-end { font-size: 10.5px } .opening-bottom { font-size: 10px }
+  .city-credit { padding: 7px 0; font-size: 10.5px }
 }

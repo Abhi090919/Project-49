@@ -134,6 +134,13 @@ function Masthead({ solid, hidden, sound, onSound }) {
   }, []);
 
   const closeMenu = () => setMenuOpen(false);
+  // keyboard users: focus moves into the menu when it opens and back to the button when it closes
+  const toggleRef = useRef(null), menuRef = useRef(null), wasOpen = useRef(false);
+  useEffect(() => {
+    if (menuOpen) menuRef.current?.querySelector('.menu-close')?.focus();
+    else if (wasOpen.current) toggleRef.current?.focus();
+    wasOpen.current = menuOpen;
+  }, [menuOpen]);
 
   return (
     <>
@@ -142,13 +149,13 @@ function Masthead({ solid, hidden, sound, onSound }) {
         <button type="button" className="sound-btn" aria-pressed={sound} onClick={onSound} aria-label={sound ? 'Sound on, turn off' : 'Sound off, turn on'} data-cursor={sound ? 'Mute' : 'Listen'}>
           <span className="sound-bars" aria-hidden="true"><i /><i /><i /><i /></span><span className="sound-txt">Sound</span>
         </button>
-        <button className={'menu-toggle ' + (menuOpen ? 'is-open' : '')} onClick={() => setMenuOpen(v => !v)}
+        <button ref={toggleRef} className={'menu-toggle ' + (menuOpen ? 'is-open' : '')} onClick={() => setMenuOpen(v => !v)}
           aria-expanded={menuOpen} aria-controls="site-menu" aria-label={menuOpen ? 'Close menu' : 'Open menu'}>
           <i /><i /><i />
         </button>
       </header>
       <button className={'menu-backdrop ' + (menuOpen ? 'is-open' : '')} onClick={closeMenu} tabIndex={menuOpen ? 0 : -1} aria-label="Close menu" />
-      <aside className={'site-menu ' + (menuOpen ? 'is-open' : '')} id="site-menu" aria-hidden={!menuOpen}>
+      <aside ref={menuRef} className={'site-menu ' + (menuOpen ? 'is-open' : '')} id="site-menu" aria-hidden={!menuOpen} {...(menuOpen ? {} : { inert: '' })}>
         <button className="menu-close" onClick={closeMenu} aria-label="Close menu"><i /><i /></button>
         <p className="eyebrow">Project 49 · Hyderabad</p>
         <nav aria-label="Menu">
