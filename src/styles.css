@@ -1039,3 +1039,9 @@ body::after { display: none !important; animation: none !important }
     -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 14%, #000 86%, transparent 100%);
             mask-image: linear-gradient(180deg, transparent 0, #000 14%, #000 86%, transparent 100%) }
 }
+
+/* No hairline under films: the letterbox bars overhang the film edge by 3px (clipped by the section),
+   so the video can never peek through on a fractional pixel row; and the section after a film has no top rule */
+.cine-letterbox::before { top: -3px; height: calc(clamp(14px, 3.2vh, 34px) + 3px) }
+.cine-letterbox::after { bottom: -3px; height: calc(clamp(14px, 3.2vh, 34px) + 3px) }
+.cine + section { border-top: 0 }
