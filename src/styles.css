@@ -1051,3 +1051,7 @@ body::after { display: none !important; animation: none !important }
 }
 /* the video layer can be clipped a pixel wider than its box on some screens: trim its own edge so it can never spill past the film box */
 .film video { clip-path: inset(3px 0 3px 0) }
+/* desktop: films have 14-34px letterbox bars, so end the video layer 12px inside them; the video edge can then never draw a line at the section seam */
+@media (min-width: 701px) and (orientation: landscape), (min-width: 1101px) {
+  .cine:not(.conversation) > .film video { clip-path: inset(12px 0 12px 0) }
+}
