@@ -257,5 +257,42 @@ img,video{max-width:100%;display:block}
   .phero h1{font-size:12vw}
   .hero h1{font-size:12.5vw}
 }
-.H{overflow-wrap:break-word}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+/* v2: four industries, headings that never break mid-word */
+.H{overflow-wrap:normal;word-break:normal;hyphens:none}
+.sec-h h2{font-size:clamp(34px,5vw,84px)}
+.tgrid.four{grid-template-columns:repeat(2,1fr)}
+.tgrid.four .tile{aspect-ratio:16/9}
+.tgrid.four .tile h3{font-size:clamp(24px,2.4vw,40px);max-width:16ch}
+.chapter h2{grid-column:1/9;font-size:clamp(38px,4.8vw,92px)}
+@media (max-width:620px){.sec-h h2{font-size:7.4vw}.chapter h2{font-size:7.2vw}.tgrid.four{grid-template-columns:1fr}.tgrid.four .tile{aspect-ratio:4/3}}
+
+/* entry gate: two doors */
+.gate{position:fixed;inset:0;z-index:90;display:flex;background:var(--white);transition:transform 1s cubic-bezier(.77,0,.18,1),opacity .6s ease .5s}
+.gate.gone{transform:translateY(-100%);opacity:0;pointer-events:none}
+.gate .top{position:absolute;top:calc(26px + env(safe-area-inset-top,0px));left:0;right:0;z-index:5;display:flex;flex-direction:column;align-items:center;gap:10px;pointer-events:none;text-align:center}
+.gate .top .logo{color:var(--ink)}
+.gate .top .lab{color:var(--ink);background:rgba(255,255,255,.85);padding:6px 12px}
+.door{container-type:inline-size;position:relative;flex:1;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;padding:0 clamp(24px,4vw,60px) calc(clamp(34px,7vh,72px) + env(safe-area-inset-bottom,0px));transition:flex-grow .9s cubic-bezier(.2,.8,.2,1);cursor:pointer;isolation:isolate;color:var(--ink);text-align:left}
+.door+.door{border-left:1px solid var(--rule)}
+.gate:hover .door{flex-grow:.8}
+.gate .door:hover{flex-grow:1.5}
+.door video,.door .art{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;filter:grayscale(1) contrast(.9) brightness(1.15);opacity:.55;transform:scale(1.08);transition:filter 1s,opacity 1s,transform 1.6s cubic-bezier(.2,.8,.2,1)}
+.door::before{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(255,255,255,.75),rgba(255,255,255,.35) 45%,rgba(255,255,255,.92));transition:opacity 1s}
+.door:hover video,.door:hover .art{filter:none;opacity:1;transform:scale(1)}
+.door:hover::before{opacity:.55}
+.door .k{display:block;font:500 11px/1 var(--mono);letter-spacing:.12em;color:var(--steel);margin-bottom:16px}
+.door .dh{display:block;font-size:clamp(28px,7cqi,104px)}
+.door .dp{display:block;max-width:34ch;margin-top:16px;font-size:16.5px;color:#5A5754;min-height:3.2em}
+.door .tease{display:block;max-height:0;opacity:0;overflow:hidden;transition:max-height .8s ease,opacity .6s ease}
+.door:hover .tease,.door:focus-visible .tease{max-height:7em;opacity:1}
+.door .enter{width:max-content;margin-top:26px;display:inline-flex;align-items:center;gap:14px;font:700 12px/1 var(--head);font-stretch:110%;letter-spacing:.1em;text-transform:uppercase}
+.door .enter i{width:52px;height:52px;border:1.5px solid var(--ink);display:grid;place-items:center;font-style:normal;font-family:var(--mono);transition:background .3s,color .3s,transform .4s}
+.door:hover .enter i{background:var(--ink);color:var(--white);transform:translateX(6px)}
+.door.res .art{background:radial-gradient(60% 60% at 60% 45%,#ffffff,#EFEDEA);display:grid;place-items:center;filter:blur(14px);opacity:1;transform:scale(1.15)}
+.door.res .art img{width:min(46vh,62%);filter:drop-shadow(0 30px 40px rgba(36,34,32,.25))}
+.door.res:hover .art{filter:blur(0);transform:scale(1)}
+.door .lock{position:absolute;top:calc(110px + env(safe-area-inset-top,0px));right:clamp(24px,4vw,60px);font:500 10.5px/1 var(--mono);letter-spacing:.12em;color:var(--steel);border:1px solid var(--steel);padding:8px 10px}
+@media (max-width:760px){.gate{flex-direction:column}.door+.door{border-left:0;border-top:1px solid var(--rule)}.door{padding-bottom:28px}.door .dh{display:block;font-size:8.4cqi}.door .dp{display:block;min-height:0}.door .tease{display:none}.gate .top{top:calc(14px + env(safe-area-inset-top,0px))}.door .lock{top:18px;bottom:auto}.door video,.door .art{filter:grayscale(.3);opacity:.8}.door.res .art{filter:blur(0);place-items:start end;padding:58px 22px 0 0}.door.res .art img{width:38%}}
+@media (prefers-reduced-motion:reduce){.gate{transition:none}}
