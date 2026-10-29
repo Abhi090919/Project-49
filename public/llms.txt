@@ -28,8 +28,8 @@
 
 ## Pages
 - [Home](https://www.anxainfra.com/): ANXA Infra, design, engineering and construction in Hyderabad
-- [Sectors](https://www.anxainfra.com/sectors.html): residential & commercial, factories, industrial, data centres, facilities, railways
-- [Projects](https://www.anxainfra.com/projects.html): selected work
+- [Sectors](https://www.anxainfra.com/sectors): residential & commercial, factories, industrial, data centres, facilities, railways
+- [Projects](https://www.anxainfra.com/projects): selected work
 - [Project 49](https://www.anxainfra.com/project-49/): the Project 49 website, film and enquiry form
 - [About ANXA Infra and FAQ](https://www.anxainfra.com/about/): who we are, how we build, frequently asked questions
 - [How to build a home on your own plot in Hyderabad](https://www.anxainfra.com/guides/build-home-on-your-own-plot-hyderabad/)
