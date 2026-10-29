@@ -33,10 +33,11 @@
 <div class="gate" id="gate" role="dialog" aria-label="Choose a way in">
   <div class="top"><span class="logo">ANXA<small>INFRA</small></span><span class="lab">Two ways in &middot; Choose yours</span></div>
   <a class="door com" href="/" data-go="com">
-    <video muted loop playsinline autoplay preload="auto" poster="/media/industrial.jpg"><source src="/media/industrial.mp4" type="video/mp4" /></video>
+    <video muted loop playsinline autoplay preload="auto" poster="/media/residential.jpg"><source src="/media/residential.mp4" type="video/mp4" /></video>
     <span class="k">01 / For businesses</span>
     <span class="H dh">Construction<br /><span class="b">&amp; infrastructure</span></span>
     <span class="dp">Design, engineering and construction for developers, industry and infrastructure.<span class="tease"> Some of our sites are rising right now. Step inside.</span></span>
+    <span class="cyc" aria-hidden="true" data-words="Residential &amp; commercial|Industrial &amp; manufacturing|Data centres|Railways"><b>Residential &amp; commercial</b></span>
     <span class="enter"><i>&rarr;</i>Enter ANXA Infra</span>
   </a>
   <a class="door res" href="/project-49/" data-go="res">
@@ -45,14 +46,23 @@
     <span class="k">02 / Real estate by ANXA</span>
     <span class="H dh">Project<br /><span class="b">49</span></span>
     <span class="dp">Our own homes, built only once.<span class="tease"> Forty-nine of them, seven ideas, never repeated. See what the first families chose.</span></span>
+    <span class="cyc" aria-hidden="true" data-words="Light|Air|Art|Roots|Earth|Silence|Future"><b>Light</b></span>
     <span class="enter"><i>&rarr;</i>Enter Project 49</span>
   </a>
 </div>
 <script>
-(function(){var g=document.getElementById('gate');if(!g)return;var seen=false;try{seen=sessionStorage.getItem('anxa-gate')==='1'}catch(e){}
-if(seen||location.hash){g.remove();return;}document.documentElement.style.overflow='hidden';
-g.querySelector('[data-go="com"]').addEventListener('click',function(ev){ev.preventDefault();try{sessionStorage.setItem('anxa-gate','1')}catch(e){}g.classList.add('gone');document.documentElement.style.overflow='';var hv=document.querySelector('.hero video');if(hv){hv.currentTime=0;hv.play().catch(function(){});}setTimeout(function(){g.remove()},1200);});
-g.querySelector('[data-go="res"]').addEventListener('click',function(){try{sessionStorage.setItem('anxa-gate','1')}catch(e){}});})();
+(function(){var g=document.getElementById('gate');if(!g)return;
+var internal=false;try{var r=document.referrer?new URL(document.referrer):null;internal=!!(r&&r.host===location.host&&!/^\/project-49/.test(r.pathname))}catch(e){}
+if(internal||location.hash){g.remove();return;}
+document.documentElement.style.overflow='hidden';requestAnimationFrame(function(){g.classList.add('in')});
+var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+// cycle the words in each door
+var v=g.querySelector('.door.com video'),films=['residential','industrial','datacentres','railways'],swap=v&&matchMedia('(min-width:761px)').matches;
+g.querySelectorAll('.cyc').forEach(function(c,ci){var w=c.dataset.words.split('|'),i=0,b=c.querySelector('b');if(reduce)return;setInterval(function(){i=(i+1)%w.length;b.classList.add('out');if(ci===0&&swap){v.style.opacity=0;}setTimeout(function(){b.innerHTML=w[i];b.classList.remove('out');if(ci===0&&swap){v.poster='/media/'+films[i]+'.jpg';v.src='/media/'+films[i]+'.mp4';v.play().catch(function(){});v.style.opacity='';}},420)},ci===0?3600:2200)});
+// gentle peek: each door briefly shows what is behind it
+var doors=g.querySelectorAll('.door'),pi=0;if(!reduce){setTimeout(function peek(){if(!g.isConnected)return;var d=doors[pi%2];d.classList.add('peek');setTimeout(function(){d.classList.remove('peek')},1700);pi++;setTimeout(peek,3200)},1400)}
+g.querySelector('[data-go="com"]').addEventListener('click',function(ev){ev.preventDefault();g.classList.add('gone');document.documentElement.style.overflow='';var hv=document.querySelector('.hero video');if(hv){hv.currentTime=0;hv.play().catch(function(){});}setTimeout(function(){g.remove()},1200);});
+})();
 </script>
 <main>
   <section class="hero">

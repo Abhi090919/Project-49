@@ -299,3 +299,22 @@ img,video{max-width:100%;display:block}
 
 /* never split words or numbers across lines */
 .H,.nums b,.ph,.btn,.nav a,.logo{overflow-wrap:normal;word-break:keep-all;hyphens:none}
+
+/* gate v2: entrance, peek and cycling preview */
+.gate .door{opacity:0;transform:translateY(24px)}
+.gate.in .door{opacity:1;transform:none;transition:opacity 1s ease,transform 1.2s cubic-bezier(.2,.8,.2,1),flex-grow .9s cubic-bezier(.2,.8,.2,1)}
+.gate.in .door.res{transition-delay:.18s,.18s,0s}
+.gate .top{opacity:0;transform:translateY(-10px);transition:opacity .8s ease .5s,transform .8s ease .5s}
+.gate.in .top{opacity:1;transform:none}
+.door video{transition:filter 1s,opacity .45s,transform 1.6s cubic-bezier(.2,.8,.2,1)}
+.door.peek video,.door.peek .art{filter:grayscale(.15) brightness(1.05);opacity:.95;transform:scale(1.02)}
+.door.peek::before{opacity:.6}
+.door.res.peek .art{filter:blur(2px);opacity:1}
+.door .cyc{display:flex;align-items:center;gap:10px;margin-top:18px;font:500 11px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--steel)}
+.door .cyc::before{content:'';width:22px;height:1px;background:var(--steel)}
+.door .cyc b{font-weight:500;display:inline-block;transition:opacity .35s ease,transform .35s ease}
+.door .cyc b.out{opacity:0;transform:translateY(-6px)}
+.door.res .cyc::after{content:'/ 7 ideas';color:var(--mid);margin-left:2px}
+@media (prefers-reduced-motion:reduce){.gate .door,.gate .top{opacity:1;transform:none}}
+/* keep door text readable over any frame of the film */
+.door::after{content:'';position:absolute;left:0;right:0;bottom:0;height:64%;z-index:-1;pointer-events:none;background:linear-gradient(180deg,rgba(255,255,255,0) 0%,rgba(255,255,255,.82) 42%,rgba(255,255,255,.96) 100%)}
