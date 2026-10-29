@@ -597,11 +597,18 @@ function Footer() {
           <a href="#people">The people</a>
           <a href="#conversation">Start a conversation</a>
           <a href="/about/">About ANXA Infra · FAQ</a>
+          <a href="/">Go to ANXA Infra →</a>
         </nav>
         <div className="footer-ideas" aria-hidden="true">
           {chapters.map(c => <span key={c.id}>{ideaName(c.id)}</span>)}
         </div>
       </div>
+      <a className="to-anxa" href="/" aria-label="Go to ANXA Infra">
+        <span className="ta-k">A real estate venture by</span>
+        <span className="ta-n">ANXA INFRA</span>
+        <span className="ta-d">Construction &amp; infrastructure services across India: commercial buildings, industrial plants, data centres and railways.</span>
+        <span className="ta-go">Go to ANXA <i aria-hidden="true">→</i></span>
+      </a>
       {CONTACT.rera && <p className="rera-line">{CONTACT.rera}</p>}
       <div className="footer-end">
         <span>ANXA INFRA · PROJECT 49 · HYDERABAD · {new Date().getFullYear()}</span>

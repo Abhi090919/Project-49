@@ -1059,3 +1059,14 @@ body::after { display: none !important; animation: none !important }
 .composer .field--half + .field--half { grid-column: 2 / 3 }
 @media (max-width: 700px) { .composer .field--half + .field--half { grid-column: 1 / -1 } }
 .composer .hp-field { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; pointer-events: none }
+
+/* Footer: way back to the parent company */
+.to-anxa { display: grid; grid-template-columns: auto 1fr auto; grid-template-rows: auto auto; column-gap: clamp(18px, 3vw, 40px); row-gap: 6px; align-items: center; margin-top: clamp(40px, 5vw, 64px); padding: clamp(22px, 3vw, 34px) clamp(20px, 3vw, 36px); border: 1px solid rgba(196,168,120,.45); color: #EFEBE2; transition: background .4s, border-color .4s }
+.to-anxa:hover { background: rgba(196,168,120,.08); border-color: #C4A878 }
+.to-anxa .ta-k { grid-column: 1; grid-row: 1; font-size: 10.5px; letter-spacing: .26em; text-transform: uppercase; color: #b7bfaf }
+.to-anxa .ta-n { grid-column: 1; grid-row: 2; font: 600 clamp(26px, 3vw, 40px)/1 'DM Sans', system-ui, sans-serif; letter-spacing: .14em }
+.to-anxa .ta-d { grid-column: 2; grid-row: 1 / 3; font-size: 13.5px; color: #b7bfaf; max-width: 46ch }
+.to-anxa .ta-go { grid-column: 3; grid-row: 1 / 3; display: inline-flex; align-items: center; gap: 12px; font-size: 11.5px; letter-spacing: .22em; text-transform: uppercase; color: #C4A878; white-space: nowrap }
+.to-anxa .ta-go i { font-style: normal; width: 44px; height: 44px; border: 1px solid #C4A878; display: grid; place-items: center; transition: background .3s, color .3s, transform .4s }
+.to-anxa:hover .ta-go i { background: #C4A878; color: #0E1712; transform: translateX(4px) }
+@media (max-width: 760px) { .to-anxa { grid-template-columns: 1fr; } .to-anxa .ta-k, .to-anxa .ta-n, .to-anxa .ta-d, .to-anxa .ta-go { grid-column: 1; grid-row: auto } .to-anxa .ta-d { margin-top: 6px } .to-anxa .ta-go { margin-top: 12px } }
