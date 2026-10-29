@@ -21,4 +21,10 @@
       <video:duration>63</video:duration>
     </video:video>
   </url>
+  <url>
+    <loc>https://www.anxainfra.com/about/</loc>
+    <lastmod>2026-10-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
 </urlset>
