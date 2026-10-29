@@ -27,7 +27,10 @@
 3. The home is designed exclusively for that land and family, built, and handed over.
 
 ## Pages
-- [Home](https://www.anxainfra.com/): the Project 49 website, film and enquiry form
+- [Home](https://www.anxainfra.com/): ANXA Infra, design, engineering and construction in Hyderabad
+- [Sectors](https://www.anxainfra.com/sectors.html): residential & commercial, factories, industrial, data centres, facilities, railways
+- [Projects](https://www.anxainfra.com/projects.html): selected work
+- [Project 49](https://www.anxainfra.com/project-49/): the Project 49 website, film and enquiry form
 - [About ANXA Infra and FAQ](https://www.anxainfra.com/about/): who we are, how we build, frequently asked questions
 - [How to build a home on your own plot in Hyderabad](https://www.anxainfra.com/guides/build-home-on-your-own-plot-hyderabad/)
 - [Designing a cool home for Hyderabad's heat](https://www.anxainfra.com/guides/cool-home-design-hyderabad-heat/)

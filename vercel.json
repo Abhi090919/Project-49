@@ -1,4 +1,5 @@
 {
+  "buildCommand": "vite build && node tools/swap-home.mjs",
   "headers": [
     {
       "source": "/assets/(.*)",
