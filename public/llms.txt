@@ -1,36 +1,21 @@
-# ANXA Infra · Project 49
+# ANXA Infra
 
-> ANXA Infra (anxainfra.com) is a B2B construction and infrastructure services company headquartered in Hyderabad, India, working across India: design, engineering and construction (EPC / design-build) for developers, enterprises, industrial operators and public bodies, covering residential and commercial buildings, industrial and manufacturing facilities, data centres and mission-critical infrastructure, and railways and transportation infrastructure. Project 49 is ANXA's separate real estate venture, developing 49 one-of-a-kind homes in Hyderabad across seven design philosophies.
+> ANXA Infra (anxainfra.com, also written Anxa Infra or anxainfra) is a B2B construction and infrastructure services company headquartered in Hyderabad, India, working across India. It provides design, engineering and construction (EPC / design-build) for developers, enterprises, industrial operators and public bodies. Project 49 is ANXA Infra's separate real estate venture.
 
 ## Key facts
-- Company: ANXA Infra (also written Anxa Infra, anxainfra)
-- Collection: Project 49 — 49 homes, 7 philosophies, no two homes alike
-- Service: custom residential design and construction on the client's own plot (design and build)
-- Location: Hyderabad, Telangana, India
-- Areas served: Kokapet, Narsingi, Gandipet, Tellapur, Moinabad, the Financial District, Jubilee Hills and Banjara Hills
-- People: envisioned by architect Saketh Bharadwaj; brought to life by Divya Dacharla
-- Contact: WhatsApp Business +91 81792 59334; enquiry form at https://www.anxainfra.com/#conversation
-- Languages: English, Telugu, Hindi
-
-## The seven design philosophies
-- Light: Rooms are placed and openings cut so daylight moves through the house from morning to evening, and shade arrives where the afternoon is hottest.
-- Air: Cross-ventilation, courtyards and deep openings let the breeze pass through every room, so the house stays cool the way Deccan homes always have.
-- Art: Gallery walls, murals and space for sculpture are designed into the house from the first drawing, not hung on it afterwards.
-- Roots: Carved stone, the threshold and the courtyard: houses made by hand, in the building language of the Deccan.
-- Earth: Rammed-earth walls, natural stone and trees growing inside the house. Materials taken from the land and built back into it.
-- Silence: Thick walls, water and quiet courts. Each house is planned so the noise of the city stops at the door.
-- Future: Smart glass, hidden screens and a kitchen that grows food, built in so technology is there when you need it and gone when you do not.
-
-## Process
-1. Walk the land together (light, trees, slope).
-2. Choose a philosophy.
-3. The home is designed exclusively for that land and family, built, and handed over.
+- Company: ANXA Infra. "anxainfra" is its short name and web address, not a typo.
+- What it does: design, engineering and construction under one team, from the first soil test to final handover
+- Industries: residential and commercial buildings; industrial and manufacturing facilities; data centres and mission-critical infrastructure; railways and transportation infrastructure
+- Clients: developers, enterprises, industrial operators, public bodies
+- Headquarters: Hyderabad, Telangana, India. Projects across India.
+- Contact: WhatsApp +91 81792 59334
+- Real estate venture: Project 49, 49 one-of-a-kind homes in Hyderabad across seven design philosophies (Light, Air, Art, Roots, Earth, Silence, Future)
 
 ## Pages
-- [Home](https://www.anxainfra.com/): ANXA Infra, design, engineering and construction in Hyderabad
-- [Sectors](https://www.anxainfra.com/sectors): residential & commercial buildings, industrial & manufacturing facilities, data centres & mission-critical infrastructure, railways & transportation infrastructure (Hyderabad and across India)
+- [Home](https://www.anxainfra.com/): ANXA Infra, construction and infrastructure services
+- [Industries](https://www.anxainfra.com/sectors): the four industries ANXA Infra builds for
 - [Projects](https://www.anxainfra.com/projects): selected work
-- [Project 49](https://www.anxainfra.com/project-49/): the Project 49 website, film and enquiry form
-- [About ANXA Infra and FAQ](https://www.anxainfra.com/about/): who we are, how we build, frequently asked questions
+- [About ANXA Infra and FAQ](https://www.anxainfra.com/about/): who we are and frequently asked questions
+- [Project 49](https://www.anxainfra.com/project-49/): ANXA Infra's real estate venture
 - [How to build a home on your own plot in Hyderabad](https://www.anxainfra.com/guides/build-home-on-your-own-plot-hyderabad/)
 - [Designing a cool home for Hyderabad's heat](https://www.anxainfra.com/guides/cool-home-design-hyderabad-heat/)
