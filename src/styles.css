@@ -1070,3 +1070,7 @@ body::after { display: none !important; animation: none !important }
 .to-anxa .ta-go i { font-style: normal; width: 44px; height: 44px; border: 1px solid #C4A878; display: grid; place-items: center; transition: background .3s, color .3s, transform .4s }
 .to-anxa:hover .ta-go i { background: #C4A878; color: #0E1712; transform: translateX(4px) }
 @media (max-width: 760px) { .to-anxa { grid-template-columns: 1fr; } .to-anxa .ta-k, .to-anxa .ta-n, .to-anxa .ta-d, .to-anxa .ta-go { grid-column: 1; grid-row: auto } .to-anxa .ta-d { margin-top: 6px } .to-anxa .ta-go { margin-top: 12px } }
+/* phone is required: the call-back depends on it */
+.composer .field .req { font-style: normal; color: var(--brass); margin-left: 6px; letter-spacing: .12em }
+.composer .field.is-missing input { border-color: #e2a47d }
+.composer .field .field-err { display: block; margin-top: 8px; font: 400 13px/1.4 var(--sans); color: #f0c2a2 }

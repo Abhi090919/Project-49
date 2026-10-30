@@ -469,7 +469,8 @@ function Chips({ options, value, onChange, single, label }) {
 function Conversation() {
   const [land, setLand] = useState(''), [where, setWhere] = useState(''), [mapped, setMapped] = useState(null);
   const [people, setPeople] = useState([]), [idea, setIdea] = useState(''), [dream, setDream] = useState(''), [name, setName] = useState(''), [phone, setPhone] = useState(''), [trap, setTrap] = useState('');
-  const [sent, setSent] = useState(false), [flash, setFlash] = useState(false);
+  const [sent, setSent] = useState(false), [flash, setFlash] = useState(false), [needPhone, setNeedPhone] = useState(false);
+  const phoneRef = useRef(null);
   useEffect(() => {
     const onLand = e => {
       const d = e.detail || {};
@@ -492,6 +493,7 @@ function Conversation() {
   if (dream.trim()) lines.push(`What we imagine: ${dream.trim()}`);
   if (lines.length === 1 || lines.length === 1 + (name.trim() ? 1 : 0) + (phone.trim() ? 1 : 0)) lines.push('We’d like to begin a private conversation about our home.');
   const note = lines.join('\n');
+  const phoneOk = phone.replace(/\D/g, '').length >= 10;
   // Every note is also kept in the Project 49 > Website Leads sheet (Google Apps Script web app),
   // so nothing is lost if the visitor never presses send in WhatsApp.
   const save = () => {
@@ -530,6 +532,15 @@ function Conversation() {
       <div className="conversation-form" data-reveal>
         {href ? (
           <form className="composer" onSubmit={e => e.preventDefault()} noValidate>
+            <label className="field field--half">
+              <span>Your name</span>
+              <input value={name} onChange={e => setName(e.target.value)} autoComplete="name" placeholder="Your name" />
+            </label>
+            <label className={'field field--half' + (needPhone && !phoneOk ? ' is-missing' : '')}>
+              <span>Your phone <em className="req">required</em></span>
+              <input ref={phoneRef} type="tel" inputMode="tel" required value={phone} onChange={e => setPhone(e.target.value)} autoComplete="tel" placeholder="10-digit mobile number" aria-invalid={needPhone && !phoneOk} />
+              {needPhone && !phoneOk && <small className="field-err">Add your phone number so we can call you back.</small>}
+            </label>
             <fieldset>
               <legend>The land</legend>
               <Chips label="The land" single options={LAND.map(([v, t]) => [v, t])} value={land} onChange={setLand} />
@@ -553,21 +564,13 @@ function Conversation() {
               <span>In a sentence, the home you imagine</span>
               <textarea rows="2" value={dream} onChange={e => setDream(e.target.value)} placeholder="Morning light in the kitchen, parents close by, a garden the children grow up in…" />
             </label>
-            <label className="field field--half">
-              <span>Your name</span>
-              <input value={name} onChange={e => setName(e.target.value)} autoComplete="name" placeholder="Optional" />
-            </label>
-            <label className="field field--half">
-              <span>Your phone</span>
-              <input type="tel" inputMode="tel" value={phone} onChange={e => setPhone(e.target.value)} autoComplete="tel" placeholder="So we can call you back" />
-            </label>
             <input className="hp-field" tabIndex={-1} autoComplete="off" aria-hidden="true" name="website" value={trap} onChange={e => setTrap(e.target.value)} />
             <div className="note" aria-live="polite">
               <span className="note-label">Your note</span>
               <p>{note}</p>
             </div>
             <div className="composer-foot">
-              <a className="btn-solid" href={href} target="_blank" rel="noopener noreferrer" data-cursor="Begin" onClick={() => { save(); setSent(true); }}>Begin a private conversation <span>↗</span></a>
+              <a className="btn-solid" href={href} target="_blank" rel="noopener noreferrer" data-cursor="Begin" onClick={e => { if (!phoneOk) { e.preventDefault(); setNeedPhone(true); phoneRef.current && phoneRef.current.focus(); return; } save(); setSent(true); }}>Begin a private conversation <span>↗</span></a>
               <small>{sent ? (CONTACT.endpoint ? 'We have your note. Press send in WhatsApp too, and we will call you back within a day.' : 'Your note is ready in WhatsApp. Press send there and we will call you back within a day.') : CONTACT.endpoint ? 'Keeps your note with us privately and opens WhatsApp with it.' : wa ? 'Opens WhatsApp with your note. Nothing is sent until you choose to.' : 'Opens your email with the note written out.'}</small>
             </div>
           </form>
