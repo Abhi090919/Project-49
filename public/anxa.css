@@ -27,8 +27,6 @@ img,video{max-width:100%;display:block}
 .hdr{position:fixed;top:0;left:0;right:0;z-index:50;height:calc(72px + env(safe-area-inset-top,0px));padding:env(safe-area-inset-top,0px) var(--gutr) 0 var(--gut);display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:30px;color:var(--white);transition:background .35s,color .35s,box-shadow .35s}
 .hdr.light,.hdr.solid{color:var(--ink)}
 .hdr.solid{background:var(--white);box-shadow:0 1px 0 var(--rule)}
-.logo{font:800 22px/1 var(--head);font-stretch:125%;letter-spacing:.06em;display:flex;align-items:baseline;gap:10px}
-.logo small{font:500 10px/1 var(--mono);letter-spacing:.2em;opacity:.8}
 .nav{display:flex;justify-content:center;gap:4px;font:600 12px/1 var(--head);font-stretch:110%;letter-spacing:.08em;text-transform:uppercase}
 .nav a{padding:10px 14px;position:relative}
 .nav a::after{content:'';position:absolute;left:14px;right:14px;bottom:4px;height:2px;background:currentColor;transform:scaleX(0);transform-origin:left;transition:transform .35s}
@@ -318,3 +316,65 @@ img,video{max-width:100%;display:block}
 @media (prefers-reduced-motion:reduce){.gate .door,.gate .top{opacity:1;transform:none}}
 /* keep door text readable over any frame of the film */
 .door::after{content:'';position:absolute;left:0;right:0;bottom:0;height:64%;z-index:-1;pointer-events:none;background:linear-gradient(180deg,rgba(255,255,255,0) 0%,rgba(255,255,255,.82) 42%,rgba(255,255,255,.96) 100%)}
+/* ANXA Infra logo: peak mark + spaced serif name */
+.logo{font:500 15px/1 'Cormorant Garamond',Georgia,serif;font-stretch:normal;letter-spacing:.34em;display:flex;align-items:center;gap:12px;white-space:nowrap}
+.logo .mk{width:30px;height:27px;fill:currentColor;flex:none;transition:transform .5s cubic-bezier(.2,.8,.2,1)}
+.logo .wm{position:relative;padding:3px 0 7px}
+.logo .wm i{position:absolute;left:0;right:.34em;bottom:0;height:1px;background:var(--steel);transform:scaleX(.3);transform-origin:left;transition:transform .6s cubic-bezier(.2,.8,.2,1)}
+a.logo:hover .mk{transform:translateY(-3px)}
+a.logo:hover .wm i{transform:scaleX(1)}
+.gate .top .logo{font-size:14px}
+@media (max-width:380px){.logo{font-size:13px;letter-spacing:.26em;gap:9px}.logo .mk{width:25px;height:22px}}
+/* opening: logo builds itself */
+.gate .intro{position:absolute;inset:0;z-index:30;background:var(--white);display:grid;place-items:center;perspective:900px;cursor:pointer;transition:opacity .8s ease,visibility 0s .8s}
+.gate .intro.done{opacity:0;visibility:hidden}
+.intro .lg{display:flex;flex-direction:column;align-items:center;transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .5s ease-out,scale .8s cubic-bezier(.7,0,.2,1),translate .8s cubic-bezier(.7,0,.2,1)}
+.intro.done .lg{scale:.86;translate:0 -24px}
+.intro .mk{width:min(48vw,250px);height:auto;fill:var(--ink);clip-path:inset(100% 0 0 0);transition:clip-path 1.25s cubic-bezier(.7,0,.2,1) .15s}
+.intro.play .mk{clip-path:inset(0 0 0 0)}
+.intro .cu{display:block;width:min(62vw,300px);height:1.5px;background:var(--steel);margin:30px 0 24px;transform:scaleX(0);transition:transform .9s cubic-bezier(.2,.8,.2,1) 1s}
+.intro.play .cu{transform:scaleX(1)}
+.intro .wm{display:flex;font:500 clamp(21px,3.2vw,30px)/1 'Cormorant Garamond',Georgia,serif;letter-spacing:.42em;margin-right:-.42em;color:var(--ink);white-space:nowrap}
+.intro .wm b{font-weight:500;opacity:0;transform:translateY(12px);filter:blur(5px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.8,.2,1),filter .7s ease}
+.intro .wm b.sp{width:.5em}
+.intro.play .wm b{opacity:1;transform:none;filter:none}
+.intro .skip{position:absolute;bottom:calc(34px + env(safe-area-inset-bottom,0px));color:var(--mid);opacity:0;transition:opacity .6s ease 2s}
+.intro.play .skip{opacity:1}
+@media (prefers-reduced-motion:reduce){.intro .mk,.intro .cu,.intro .wm b,.intro .skip{transition:none}}
+/* logo v2: copper dash under the peak */
+.logo .mkw{display:flex;flex-direction:column;align-items:center;gap:4px;flex:none}
+.logo .mkw .mk{transition:transform .5s cubic-bezier(.2,.8,.2,1)}
+.logo .mkw i{display:block;width:36px;height:1.5px;background:var(--steel);transition:transform .5s cubic-bezier(.2,.8,.2,1)}
+.logo .wm{padding:0}
+a.logo:hover .mkw i{transform:scaleX(1.35)}
+/* page loader */
+.ld{position:fixed;inset:0;z-index:200;background:var(--white);display:grid;place-items:center;animation:ldauto .8s cubic-bezier(.77,0,.18,1) 4s forwards;transition:transform .8s cubic-bezier(.77,0,.18,1)}
+@keyframes ldauto{to{transform:translateY(-101%)}}
+.ld.off{transform:translateY(-101%);animation:none;pointer-events:none}
+.ld.on{transform:none;animation:none;transition:transform .5s cubic-bezier(.77,0,.18,1)}
+.ld .ldc{display:flex;flex-direction:column;align-items:center;transition:opacity .4s ease,translate .6s ease}
+.ld.off .ldc{opacity:0;translate:0 -30px}
+.ld .mk{width:min(30vw,120px);height:auto;fill:var(--ink);animation:ldrise 1.3s cubic-bezier(.7,0,.2,1) infinite}
+.ld i{display:block;width:min(36vw,150px);height:1.5px;background:var(--steel);margin:18px 0 16px;transform-origin:center;animation:lddash 1.3s cubic-bezier(.2,.8,.2,1) infinite}
+.ld span{font:500 14px/1 'Cormorant Garamond',Georgia,serif;letter-spacing:.42em;margin-right:-.42em;color:var(--ink)}
+@keyframes ldrise{0%{clip-path:inset(100% 0 0 0)}55%,85%{clip-path:inset(0 0 0 0)}100%{clip-path:inset(0 0 0 0);opacity:.0}}
+@keyframes lddash{0%{transform:scaleX(0)}55%,100%{transform:scaleX(1)}}
+/* choosing ANXA Infra: dive through the peak */
+.dive{position:fixed;inset:0;z-index:150;display:grid;place-items:center;background:rgba(255,255,255,0);pointer-events:none;transition:background .5s ease}
+.dive.a{background:#fff}
+.dive .dc{display:flex;flex-direction:column;align-items:center}
+.dive .mk{width:min(42vw,210px);height:auto;fill:var(--ink);transform-origin:50% 66%;clip-path:inset(100% 0 0 0);transition:clip-path .9s cubic-bezier(.7,0,.2,1) .15s}
+.dive.a .mk{clip-path:inset(0 0 0 0)}
+.dive .cu{display:block;width:min(56vw,260px);height:1.5px;background:var(--steel);margin:26px 0 22px;scale:0 1;transition:scale .7s cubic-bezier(.2,.8,.2,1) .6s}
+.dive.a .cu{scale:1 1}
+.dive .msg{font:500 12px/1.4 var(--mono);letter-spacing:.2em;text-transform:uppercase;color:var(--ink);white-space:nowrap;display:flex}
+.dive .msg span{opacity:0;transition:opacity .08s}
+.dive.a .msg span{opacity:1}
+.dive .cnt{margin-top:18px;font:800 15px/1 var(--head);font-stretch:112%;color:var(--steel);font-variant-numeric:tabular-nums;opacity:0;transition:opacity .4s ease .6s}
+.dive.a .cnt{opacity:1}
+.dive.b{background:rgba(255,255,255,0);transition:background .7s ease .35s}
+.dive.b .mk{scale:40;opacity:0;transition:scale 1.4s cubic-bezier(.75,0,.25,1),opacity .45s ease .95s}
+.dive.b .msg,.dive.b .cnt{opacity:0;transition:opacity .3s ease}
+.dive.b .msg span{transition-delay:0s!important}
+.dive.b .cu{scale:9 1;translate:0 70vh;opacity:0;transition:scale .8s cubic-bezier(.7,0,.3,1),translate 1.3s cubic-bezier(.6,0,.3,1) .2s,opacity .4s ease 1.2s}
+@media (max-width:420px){.dive .msg{font-size:10px;letter-spacing:.14em}}

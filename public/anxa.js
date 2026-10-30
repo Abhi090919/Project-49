@@ -57,3 +57,23 @@ document.documentElement.classList.add('js');
     addEventListener('mousemove',e=>{ xh.classList.add('on'); v.style.left=e.clientX+'px'; h.style.top=e.clientY+'px'; t.style.left=(e.clientX+12)+'px'; t.style.top=(e.clientY+12)+'px'; t.textContent='X '+String(Math.round(e.clientX)).padStart(4,'0')+'  Y '+String(Math.round(e.clientY+scrollY)).padStart(5,'0'); },{passive:true});
     document.addEventListener('mouseleave',()=>xh.classList.remove('on')); }
 })();
+
+// page loader: the ANXA peak builds while the next page loads
+(function(){
+  const ld=document.querySelector('.ld'); if(!ld) return;
+  const hide=()=>{ ld.classList.remove('on'); ld.classList.add('off'); };
+  const minShow=()=>Math.max(0,750-performance.now());
+  if(document.readyState==='complete') setTimeout(hide,minShow()); else addEventListener('load',()=>setTimeout(hide,minShow()));
+  setTimeout(hide,2600); // never hold a slow connection hostage
+  addEventListener('pageshow',e=>{ if(e.persisted) hide(); });
+  document.addEventListener('click',e=>{
+    const a=e.target.closest('a[href]'); if(!a||e.defaultPrevented||e.button!==0||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey) return;
+    if(a.target==='_blank'||a.hasAttribute('download')||a.dataset.go) return;
+    let u; try{ u=new URL(a.href,location.href); }catch(_){ return; }
+    if(u.origin!==location.origin||!/^https?:/.test(u.protocol)) return;
+    if(u.pathname===location.pathname&&u.search===location.search) return; // same page / anchors
+    e.preventDefault();
+    ld.classList.remove('off'); void ld.offsetWidth; ld.classList.add('on');
+    setTimeout(()=>{ location.href=u.href; },520);
+  });
+})();
