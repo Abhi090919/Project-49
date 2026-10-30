@@ -378,3 +378,28 @@ a.logo:hover .mkw i{transform:scaleX(1.35)}
 .dive.b .msg span{transition-delay:0s!important}
 .dive.b .cu{scale:9 1;translate:0 70vh;opacity:0;transition:scale .8s cubic-bezier(.7,0,.3,1),translate 1.3s cubic-bezier(.6,0,.3,1) .2s,opacity .4s ease 1.2s}
 @media (max-width:420px){.dive .msg{font-size:10px;letter-spacing:.14em}}
+/* project brief form */
+.brief{margin-top:70px;padding:44px 0 10px;border-top:1px solid var(--rule);row-gap:26px;column-gap:28px}
+.brief .bl{grid-column:1/-1}
+.brief .f{grid-column:span 6;display:block;border:0;padding:0;margin:0;min-width:0}
+.brief .f.wide,.brief .bfoot{grid-column:1/-1}
+.brief .f>span,.brief legend{display:block;font:500 11px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--mid);margin-bottom:10px;padding:0}
+.brief em{font-style:normal;color:var(--steel)}
+.brief input,.brief textarea{width:100%;background:transparent;border:0;border-bottom:1.5px solid #CFCAC3;padding:8px 0 12px;font:500 19px/1.35 var(--body);color:var(--ink);border-radius:0;resize:none;outline:none;transition:border-color .25s}
+.brief input:focus,.brief textarea:focus{border-color:var(--steel)}
+.brief input::placeholder,.brief textarea::placeholder{color:#B4AFA8}
+.brief .bad input{border-color:#C0643C}
+.brief .bad>span::after{content:" \2014  required";color:#C0643C;letter-spacing:.06em}
+.brief .chips{display:flex;flex-wrap:wrap;gap:8px}
+.brief .chips button{font:600 12px/1 var(--head);font-stretch:108%;letter-spacing:.06em;text-transform:uppercase;padding:12px 16px;border:1.5px solid #CFCAC3;background:transparent;color:var(--ink);cursor:pointer;transition:background .2s,color .2s,border-color .2s;white-space:nowrap}
+.brief .chips button:hover{border-color:var(--ink)}
+.brief .chips button.on{background:var(--ink);border-color:var(--ink);color:var(--white)}
+.brief .hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+.brief .bfoot{display:flex;align-items:center;gap:24px;flex-wrap:wrap;margin-top:8px}
+.brief .bfoot .btn{cursor:pointer}
+.brief .msg{font-size:15px;color:var(--mid)}
+.brief .msg.ok{color:var(--ink)}
+.brief .msg a{color:var(--steel);text-decoration:underline}
+.brief.sent .f,.brief.sent .bfoot .btn{opacity:.45;pointer-events:none}
+@media (max-width:760px){.brief .f{grid-column:1/-1}.brief .chips button{padding:11px 13px;font-size:11px}}
+.brief.g12>.f,.brief.g12>.bfoot{justify-self:stretch !important}

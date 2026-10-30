@@ -77,3 +77,32 @@ document.documentElement.classList.add('js');
     setTimeout(()=>{ location.href=u.href; },520);
   });
 })();
+
+// project brief: saved to the ANXA Infra > Website Leads sheet, with WhatsApp as the fallback
+(function(){
+  const ENDPOINT = ''; // Google Apps Script web app URL for "ANXA Infra – Website Leads"
+  const WA = '918179259334';
+  document.querySelectorAll('[data-brief]').forEach(form=>{
+    form.querySelectorAll('.chips').forEach(c=>c.addEventListener('click',e=>{
+      const b=e.target.closest('button'); if(!b) return;
+      const was=b.classList.contains('on'); c.querySelectorAll('button').forEach(x=>x.classList.remove('on')); if(!was) b.classList.add('on');
+    }));
+    const msg=form.querySelector('.msg');
+    form.addEventListener('input',e=>{ const l=e.target.closest('.f'); if(l) l.classList.remove('bad'); });
+    form.addEventListener('submit',e=>{
+      e.preventDefault();
+      const v=n=>(form.elements[n]?.value||'').trim(), chip=n=>form.querySelector(`.chips[data-name="${n}"] .on`)?.textContent||'';
+      const d={ name:v('name'), company:v('company'), phone:v('phone'), email:v('email'), industry:chip('industry'), location:v('location'), size:v('size'), timeline:chip('timeline'), brief:v('brief'), page:location.pathname, website:v('website') };
+      const bad=[]; if(!d.name) bad.push('name'); if(!d.company) bad.push('company'); if(d.phone.replace(/\D/g,'').length<10) bad.push('phone');
+      form.querySelectorAll('.f').forEach(l=>l.classList.remove('bad'));
+      if(bad.length){ bad.forEach(n=>form.elements[n].closest('.f').classList.add('bad')); form.elements[bad[0]].focus(); msg.className='msg'; msg.textContent='Please fill in your name, company and a phone number we can call.'; return; }
+      const note=['Hello ANXA Infra,',`I'm ${d.name} from ${d.company}.`,`Phone: ${d.phone}`+(d.email?` · Email: ${d.email}`:''),d.industry&&`Industry: ${d.industry}`,d.location&&`Location: ${d.location}`,d.size&&`Size / budget: ${d.size}`,d.timeline&&`Timeline: ${d.timeline}`,d.brief&&`Project: ${d.brief}`].filter(Boolean).join('\n');
+      const wa='https://wa.me/'+WA+'?text='+encodeURIComponent(note);
+      if(ENDPOINT){
+        try{ fetch(ENDPOINT,{method:'POST',mode:'no-cors',keepalive:true,headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(d)}).catch(()=>{}); }catch(_){}
+        form.classList.add('sent'); msg.className='msg ok';
+        msg.innerHTML='Thank you, '+d.name.replace(/[<>&]/g,'')+'. We have your brief and will call you within one working day. <a target="_blank" rel="noopener" href="'+wa+'">Also send it on WhatsApp</a>';
+      } else { window.open(wa,'_blank','noopener'); msg.className='msg ok'; msg.textContent='Your brief is ready in WhatsApp. Press send there and we will call you within one working day.'; }
+    });
+  });
+})();

@@ -208,6 +208,20 @@ function dive(){var hv=document.querySelector('.hero video'),hb=document.querySe
       <span class="ph">+91 81792 59334</span>
       <a class="btn fill" href="https://wa.me/918179259334" target="_blank" rel="noopener">Discuss a project <span class="ar">&rarr;</span></a>
     </div>
+    <form class="brief g12 rv" data-brief novalidate>
+      <p class="lab bl">[ Send a project brief ]</p>
+      <label class="f"><span>Your name <em>*</em></span><input name="name" autocomplete="name" required /></label>
+      <label class="f"><span>Company <em>*</em></span><input name="company" autocomplete="organization" required /></label>
+      <label class="f"><span>Phone <em>*</em></span><input name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="10-digit mobile" required /></label>
+      <label class="f"><span>Email</span><input name="email" type="email" autocomplete="email" placeholder="Optional" /></label>
+      <fieldset class="f wide"><legend>Industry</legend><div class="chips" data-name="industry"><button type="button">Residential &amp; commercial</button><button type="button">Industrial &amp; manufacturing</button><button type="button">Data centre</button><button type="button">Railways &amp; transport</button><button type="button">Other</button></div></fieldset>
+      <label class="f"><span>Project location</span><input name="location" placeholder="City or site" /></label>
+      <label class="f"><span>Size or budget</span><input name="size" placeholder="e.g. 2 lakh sq ft or &#8377;40 Cr" /></label>
+      <fieldset class="f wide"><legend>Timeline</legend><div class="chips" data-name="timeline"><button type="button">Within 3 months</button><button type="button">3&ndash;6 months</button><button type="button">6&ndash;12 months</button><button type="button">Planning stage</button></div></fieldset>
+      <label class="f wide"><span>The project in a sentence</span><textarea name="brief" rows="2" placeholder="What you are building, and what you need from us"></textarea></label>
+      <input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" />
+      <div class="bfoot wide"><button class="btn fill" type="submit">Send brief <span class="ar">&rarr;</span></button><p class="msg" aria-live="polite">We call back within one working day.</p></div>
+    </form>
     <footer class="ft g12">
       <span class="logo"><span class="mkw"><svg class="mk" viewBox="128 58 364 326" aria-hidden="true"><path d="M137 376 L309 66 L484 375 Q372 232 309 103 Q240 236 137 376 Z"/></svg><i></i></span><span class="wm">ANXA INFRA</span></span>
       <nav><a href="/">Home</a><a href="/sectors">Industries</a><a href="/projects">Projects</a><a href="/project-49/">Project 49</a></nav>
